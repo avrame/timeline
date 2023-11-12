@@ -33,10 +33,31 @@ if (mouse_year_b) mouse_year_b.innerText = Math.floor(mouse_year).toString()
 timeline_div?.appendChild(app.view as unknown as Node)
 
 const timeline_container = new PIXI.Container()
+const label_container = new PIXI.Container()
 
 const decade_ticks = new PIXI.Graphics()
 const year_ticks = new PIXI.Graphics()
-timeline_container.addChild(decade_ticks).addChild(year_ticks)
+
+const decade_text_style = new PIXI.TextStyle({
+  fontSize: 14,
+})
+const decade_labels: { [year: number]: PIXI.Text } = {}
+for (let y = START_YEAR; y <= END_YEAR; y += 10) {
+  const label = new PIXI.Text(y.toString(), decade_text_style)
+  label.x = (y - START_YEAR) * pixels_per_year
+  label.y = VIEW_HEIGHT - 64
+  let x_anchor = 0.5
+  if (label.x <= 0) { x_anchor = 0 }
+  else if (label.x >= VIEW_WIDTH) { x_anchor = 1 }
+  label.anchor.set(x_anchor, 1)
+  label_container.addChild(label)
+  decade_labels[y] = label
+}
+
+timeline_container
+  .addChild(decade_ticks)
+  .addChild(year_ticks)
+  .addChild(label_container)
 app.stage.addChild(timeline_container)
 draw_decade_ticks()
 draw_year_ticks()
@@ -65,6 +86,7 @@ app.stage.addEventListener('wheel', (e) => {
   calc_mouse_position(e)
 
   draw_decade_ticks()
+  update_decade_label_positions()
   draw_year_ticks()
 
   const mouse_pos_ratio = VIEW_WIDTH / mouse_x
@@ -95,6 +117,12 @@ function draw_decade_ticks() {
     const x_pos = year * pixels_per_year
     decade_ticks.moveTo(x_pos, VIEW_HEIGHT)
     decade_ticks.lineTo(x_pos, VIEW_HEIGHT - 64)
+  }
+}
+
+function update_decade_label_positions() {
+  for (let year = 0; year <= YEAR_SPAN; year += 10) {
+    decade_labels[year + START_YEAR].x = year * pixels_per_year
   }
 }
 
