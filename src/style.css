@@ -1,3 +1,9 @@
+:root {
+  --timeline-bg-color: #EEF;
+  --year-tick-color: #666;
+  --decade-tick-color: #333;
+}
+
 body {
   padding: 0;
   margin: 0;
@@ -25,7 +31,7 @@ main {
 }
 
 #timeline {
-  background-color: #EEF;
+  background-color: var(--timeline-bg-color);
   width: 100%;
   height: 256px;
 }

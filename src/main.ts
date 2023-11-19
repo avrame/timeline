@@ -1,12 +1,15 @@
 import './style.css'
 import * as PIXI from 'pixi.js'
 import '@pixi/graphics-extras'
+import { get_theme } from './theme'
 
 const timeline_div = document.getElementById('timeline') ?? undefined
 const mouse_year_b = document.getElementById('mouse_year') ?? undefined
 
+const theme = get_theme()
+
 const app = new PIXI.Application({
-  background: '#EEF',
+  background: theme['timeline-bg-color'],
   resizeTo: timeline_div,
 })
 
@@ -118,7 +121,7 @@ function calc_mouse_position(global_mouse_x: number) {
 
 function draw_decade_ticks() {
   decade_ticks.clear()
-  decade_ticks.lineStyle({ width: 2, color: '#333' })
+  decade_ticks.lineStyle({ width: 2, color: theme['decade-tick-color'] })
   for (let year = 0; year <= YEAR_SPAN; year += 10) {
     const x_pos = year * pixels_per_year + VIEW_X_MARGIN
     decade_ticks.moveTo(x_pos, VIEW_HEIGHT)
@@ -128,7 +131,7 @@ function draw_decade_ticks() {
 
 function draw_year_ticks() {
   year_ticks.clear()
-  year_ticks.lineStyle({ width: 1, color: '#666' })
+  year_ticks.lineStyle({ width: 1, color: theme['year-tick-color'] })
   for (let year = 0; year <= YEAR_SPAN; year += 1) {
     const x_pos = year * pixels_per_year + VIEW_X_MARGIN
     year_ticks.moveTo(x_pos, VIEW_HEIGHT)
