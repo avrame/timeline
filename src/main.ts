@@ -66,7 +66,7 @@ draw_year_ticks()
 app.stage.eventMode = 'static'
 app.stage.hitArea = new PIXI.Rectangle(0, 0, VIEW_WIDTH, VIEW_HEIGHT)
 
-app.stage.addEventListener('mousemove', (e) => calc_mouse_position(e.x))
+app.stage.addEventListener('pointermove', (e) => calc_mouse_position(e.x))
 
 app.stage.addEventListener('wheel', (e) => {
   e.preventDefault()
@@ -83,7 +83,7 @@ app.stage.addEventListener('wheel', (e) => {
   update_decade_label_positions()
   draw_year_ticks()
 
-  const x_offset = -1 * (((mouse_x - timeline_container.x) * zoom_mult) - mouse_x)
+  const x_offset = -1 * (((mouse_x - timeline_container.x) * zoom_mult) - mouse_x) - e.deltaX
 
   if (x_offset > 0 || zoom === 1) {
     timeline_container.x = 0

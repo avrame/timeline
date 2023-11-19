@@ -1,12 +1,20 @@
 :root {
-  --timeline-bg-color: #EEF;
+  --page-bg-color: #222;
+  --timeline-bg-color: #AAA;
   --year-tick-color: #666;
   --decade-tick-color: #333;
+  --mouse-year-color: #FFF;
+}
+
+html,
+body {
+  overscroll-behavior-x: none;
 }
 
 body {
   padding: 0;
   margin: 0;
+  background-color: var(--page-bg-color);
 }
 
 main {
@@ -17,15 +25,12 @@ main {
 }
 
 #mouse_year {
+  color: var(--mouse-year-color);
   display: block;
   text-align: center;
   margin: 0 auto 1rem;
 }
 
-#timeline_container {
-  display: flex;
-  justify-content: stretch;
-}
 #timeline_container button {
   width: 48px;
 }
