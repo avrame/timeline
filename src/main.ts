@@ -13,9 +13,7 @@ const app = new PIXI.Application({
   resizeTo: timeline_div,
 })
 
-const VIEW_X = timeline_div?.getBoundingClientRect().x ?? 0
-const VIEW_WIDTH = app.view.width
-const VIEW_HEIGHT = app.view.height
+const VIEW_X_POS = timeline_div?.getBoundingClientRect().x ?? 0
 const VIEW_X_MARGIN = 20
 const START_YEAR = 1900
 const END_YEAR = 2000
@@ -27,7 +25,7 @@ const ZOOM_RATE = .005
 let start_year = START_YEAR
 let end_year = END_YEAR
 let year_span = YEAR_SPAN
-let pixels_per_year = (VIEW_WIDTH - 2 * VIEW_X_MARGIN) / year_span
+let pixels_per_year = (app.view.width - 2 * VIEW_X_MARGIN) / year_span
 let zoom = 1.0
 let global_mouse_x = 0
 let mouse_x = 0
@@ -48,7 +46,7 @@ const decade_labels: { [year: number]: PIXI.Text } = {}
 for (let y = START_YEAR; y <= END_YEAR; y += 10) {
   const label = new PIXI.Text(y.toString(), decade_text_style)
   label.x = (y - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
-  label.y = VIEW_HEIGHT - 64
+  label.y = app.view.height - 64
   label.anchor.set(0.5, 1)
   label_container.addChild(label)
   decade_labels[y] = label
@@ -63,11 +61,17 @@ draw_decade_ticks()
 draw_year_ticks()
 
 app.stage.eventMode = 'static'
-app.stage.hitArea = new PIXI.Rectangle(0, 0, VIEW_WIDTH, VIEW_HEIGHT)
+app.stage.hitArea = new PIXI.Rectangle(0, 0, app.view.width, app.view.height)
+window.addEventListener('resize', () => {
+  pixels_per_year = calc_pixels_per_year(year_span)
+  draw_year_ticks()
+  draw_decade_ticks()
+  update_decade_label_positions()
+})
 app.stage.addEventListener('pointermove', (e) => { global_mouse_x = e.x })
 app.stage.addEventListener('wheel', handle_mouse_wheel)
 app.ticker.add(() => {
-  mouse_x = global_mouse_x - VIEW_X - VIEW_X_MARGIN
+  mouse_x = global_mouse_x - VIEW_X_POS - VIEW_X_MARGIN
   mouse_year = start_year + mouse_x / pixels_per_year
   if (mouse_year_b) mouse_year_b.innerText = Math.floor(mouse_year).toString()
   draw_year_ticks()
@@ -81,7 +85,7 @@ function handle_mouse_wheel(e: WheelEvent) {
   global_mouse_x = e.x
   const zoom_mult = calc_zoom(e.deltaY)
   year_span = YEAR_SPAN / zoom
-  pixels_per_year = (VIEW_WIDTH - 2 * VIEW_X_MARGIN) / year_span
+  pixels_per_year = calc_pixels_per_year(year_span)
 
   // Prevents too much horizontal sliding when zooming
   const wheel_delta_x = e.deltaY > 2 ? 0 : e.deltaX
@@ -90,13 +94,17 @@ function handle_mouse_wheel(e: WheelEvent) {
   if (x_offset > 0 || zoom === 1) {
     timeline_container.x = 0
   } else if (end_year > END_YEAR) {
-    timeline_container.x = VIEW_WIDTH - timeline_container.width
+    timeline_container.x = app.view.width - timeline_container.width
   } else {
     timeline_container.x = x_offset
   }
 
   start_year = START_YEAR - x_offset / pixels_per_year
   end_year = start_year + year_span
+}
+
+function calc_pixels_per_year(year_span: number) {
+  return (app.view.width - 2 * VIEW_X_MARGIN) / year_span
 }
 
 function calc_zoom(delta_y: number): number {
@@ -120,8 +128,8 @@ function draw_year_ticks() {
   for (let year = 0; year <= YEAR_SPAN; year += 1) {
     if (year % 10 !== 0) {
       const x_pos = year * pixels_per_year + VIEW_X_MARGIN
-      year_ticks.moveTo(x_pos, VIEW_HEIGHT)
-      year_ticks.lineTo(x_pos, VIEW_HEIGHT - 32)
+      year_ticks.moveTo(x_pos, app.view.height)
+      year_ticks.lineTo(x_pos, app.view.height - 32)
     }
   }
 }
@@ -131,8 +139,8 @@ function draw_decade_ticks() {
   decade_ticks.lineStyle({ width: 2, color: theme['decade-tick-color'] })
   for (let year = 0; year <= YEAR_SPAN; year += 10) {
     const x_pos = year * pixels_per_year + VIEW_X_MARGIN
-    decade_ticks.moveTo(x_pos, VIEW_HEIGHT)
-    decade_ticks.lineTo(x_pos, VIEW_HEIGHT - 64)
+    decade_ticks.moveTo(x_pos, app.view.height)
+    decade_ticks.lineTo(x_pos, app.view.height - 64)
   }
 }
 
