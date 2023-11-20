@@ -29,10 +29,9 @@ let end_year = END_YEAR
 let year_span = YEAR_SPAN
 let pixels_per_year = (VIEW_WIDTH - 2 * VIEW_X_MARGIN) / year_span
 let zoom = 1.0
+let global_mouse_x = 0
 let mouse_x = 0
 let mouse_year = START_YEAR + YEAR_SPAN / 2
-
-if (mouse_year_b) mouse_year_b.innerText = Math.floor(mouse_year).toString()
 
 timeline_div?.appendChild(app.view as unknown as Node)
 
@@ -65,51 +64,27 @@ draw_year_ticks()
 
 app.stage.eventMode = 'static'
 app.stage.hitArea = new PIXI.Rectangle(0, 0, VIEW_WIDTH, VIEW_HEIGHT)
-
-app.stage.addEventListener('pointermove', (e) => handle_pointer_move(e.x))
-
+app.stage.addEventListener('pointermove', (e) => { global_mouse_x = e.x })
 app.stage.addEventListener('wheel', handle_mouse_wheel)
-
-function calc_zoom(delta_y: number): number {
-  const zoom_delta = delta_y * ZOOM_RATE
-  const new_zoom = zoom + zoom_delta
-  if (new_zoom < MIN_ZOOM) {
-    zoom = MIN_ZOOM
-    return 1
-  } else if (new_zoom > MAX_ZOOM) {
-    zoom = MAX_ZOOM
-    return 1
-  } else {
-    const zoom_mult = new_zoom / zoom
-    zoom = new_zoom
-    return zoom_mult
-  }
-}
-
-function handle_pointer_move(global_mouse_x: number) {
+app.ticker.add(() => {
   mouse_x = global_mouse_x - VIEW_X - VIEW_X_MARGIN
   mouse_year = start_year + mouse_x / pixels_per_year
   if (mouse_year_b) mouse_year_b.innerText = Math.floor(mouse_year).toString()
-}
+  draw_year_ticks()
+  draw_decade_ticks()
+  update_decade_label_positions()
+})
 
 function handle_mouse_wheel(e: WheelEvent) {
   e.preventDefault()
 
+  global_mouse_x = e.x
   const zoom_mult = calc_zoom(e.deltaY)
-
   year_span = YEAR_SPAN / zoom
-
   pixels_per_year = (VIEW_WIDTH - 2 * VIEW_X_MARGIN) / year_span
-
-  handle_pointer_move(e.x)
-
-  draw_year_ticks()
-  draw_decade_ticks()
-  update_decade_label_positions()
 
   // Prevents too much horizontal sliding when zooming
   const wheel_delta_x = e.deltaY > 2 ? 0 : e.deltaX
-
   const x_offset = -1 * (((mouse_x - timeline_container.x) * zoom_mult) - mouse_x) - wheel_delta_x
 
   if (x_offset > 0 || zoom === 1) {
@@ -122,6 +97,21 @@ function handle_mouse_wheel(e: WheelEvent) {
 
   start_year = START_YEAR - x_offset / pixels_per_year
   end_year = start_year + year_span
+}
+
+function calc_zoom(delta_y: number): number {
+  const zoom_delta = delta_y * ZOOM_RATE
+  const new_zoom = zoom + zoom_delta
+  let zoom_mult = 1
+  if (new_zoom < MIN_ZOOM) {
+    zoom = MIN_ZOOM
+  } else if (new_zoom > MAX_ZOOM) {
+    zoom = MAX_ZOOM
+  } else {
+    zoom_mult = new_zoom / zoom
+    zoom = new_zoom
+  }
+  return zoom_mult
 }
 
 function draw_year_ticks() {
