@@ -15,17 +15,17 @@ const app = new PIXI.Application({
 
 const VIEW_X_POS = timeline_div?.getBoundingClientRect().x ?? 0
 const VIEW_X_MARGIN = 20
-const START_YEAR = 1900
+const START_YEAR = 0
 const END_YEAR = 2000
 const YEAR_SPAN = END_YEAR - START_YEAR
 const MIN_ZOOM = 1
-const MAX_ZOOM = 7
+const MAX_ZOOM = 100
 const ZOOM_RATE = .005
 const YEAR_TICK_HEIGHT = 32
 const DECADE_TICK_HEIGHT = 64
+const CENTURY_TICK_HEIGHT = 96
 
 let start_year = START_YEAR
-let end_year = END_YEAR
 let year_span = YEAR_SPAN
 let pixels_per_year = (app.view.width - 2 * VIEW_X_MARGIN) / year_span
 let zoom = 1.0
@@ -38,37 +38,53 @@ timeline_div?.appendChild(app.view as unknown as Node)
 const timeline_container = new PIXI.Container()
 const label_container = new PIXI.Container()
 
+const century_ticks = new PIXI.Graphics()
 const decade_ticks = new PIXI.Graphics()
 const year_ticks = new PIXI.Graphics()
+
+const century_text_style = new PIXI.TextStyle({
+  fontSize: 16,
+})
+const century_labels: { [year: number]: PIXI.Text } = {}
+for (let y = START_YEAR; y <= END_YEAR; y += 100) {
+  const label = new PIXI.Text(y.toString(), century_text_style)
+  label.x = (y - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+  label.y = app.view.height - CENTURY_TICK_HEIGHT
+  label.anchor.set(0.5, 1)
+  label_container.addChild(label)
+  century_labels[y] = label
+}
 
 const decade_text_style = new PIXI.TextStyle({
   fontSize: 14,
 })
 const decade_labels: { [year: number]: PIXI.Text } = {}
 for (let y = START_YEAR; y <= END_YEAR; y += 10) {
-  const label = new PIXI.Text(y.toString(), decade_text_style)
-  label.x = (y - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
-  label.y = app.view.height - 64
-  label.anchor.set(0.5, 1)
-  label_container.addChild(label)
-  decade_labels[y] = label
+  if (y % 100 !== 0) {
+    const label = new PIXI.Text(y.toString(), decade_text_style)
+    label.x = (y - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+    label.y = app.view.height - DECADE_TICK_HEIGHT
+    label.anchor.set(0.5, 1)
+    label.visible = false
+    label_container.addChild(label)
+    decade_labels[y] = label
+  }
 }
 
 timeline_container
+  .addChild(century_ticks)
   .addChild(decade_ticks)
   .addChild(year_ticks)
   .addChild(label_container)
 app.stage.addChild(timeline_container)
-draw_decade_ticks()
-draw_year_ticks()
+draw_ticks()
 
 app.stage.eventMode = 'static'
 app.stage.hitArea = new PIXI.Rectangle(0, 0, app.view.width, app.view.height)
 window.addEventListener('resize', () => {
   pixels_per_year = calc_pixels_per_year(year_span)
-  draw_year_ticks()
-  draw_decade_ticks()
-  update_decade_label_positions()
+  draw_ticks()
+  update_label_positions()
 })
 app.stage.addEventListener('pointermove', (e) => { global_mouse_x = e.x })
 app.stage.addEventListener('wheel', handle_mouse_wheel)
@@ -77,10 +93,8 @@ app.ticker.add(() => {
   mouse_year = start_year + mouse_x / pixels_per_year
   if (mouse_year_b) mouse_year_b.innerText = Math.floor(mouse_year).toString()
   start_year = START_YEAR - timeline_container.x / pixels_per_year
-  end_year = start_year + year_span
-  draw_year_ticks()
-  draw_decade_ticks()
-  update_decade_label_positions()
+  draw_ticks()
+  update_label_positions()
 })
 
 function handle_mouse_wheel(e: WheelEvent) {
@@ -124,6 +138,13 @@ function calc_zoom(delta_y: number): number {
   return zoom_mult
 }
 
+function draw_ticks() {
+  console.log(year_span)
+  if (year_span <= 200) { draw_year_ticks() } else { year_ticks.clear() }
+  if (year_span <= 340) { draw_decade_ticks() } else { decade_ticks.clear() }
+  draw_century_ticks()
+}
+
 function draw_year_ticks() {
   year_ticks.clear()
   year_ticks.lineStyle({ width: 1, color: theme['year-tick-color'] })
@@ -144,15 +165,46 @@ function draw_decade_ticks() {
   const start_decade = Math.floor(start_year / 10) * 10
   const start = Math.floor(start_decade - START_YEAR)
   const end = Math.ceil(start_decade + year_span)
-  for (let year = start; year <= end; year += 10) {
-    const x_pos = year * pixels_per_year + VIEW_X_MARGIN
+  for (let year_count = start; year_count <= end; year_count += 10) {
+    const x_pos = year_count * pixels_per_year + VIEW_X_MARGIN
     decade_ticks.moveTo(x_pos, app.view.height)
     decade_ticks.lineTo(x_pos, app.view.height - DECADE_TICK_HEIGHT)
   }
 }
 
+function draw_century_ticks() {
+  century_ticks.clear()
+  century_ticks.lineStyle({ width: 2, color: theme['century-tick-color'] })
+  const start_century = Math.floor(start_year / 100) * 100
+  const start = Math.floor(start_century - START_YEAR)
+  const end = Math.ceil(start_century + year_span)
+  for (let year = start; year <= end; year += 100) {
+    const x_pos = year * pixels_per_year + VIEW_X_MARGIN
+    century_ticks.moveTo(x_pos, app.view.height)
+    century_ticks.lineTo(x_pos, app.view.height - CENTURY_TICK_HEIGHT)
+  }
+}
+
+function update_label_positions() {
+  update_decade_label_positions()
+  update_century_label_positions()
+}
+
 function update_decade_label_positions() {
   for (let year = 0; year <= YEAR_SPAN; year += 10) {
-    decade_labels[year + START_YEAR].x = year * pixels_per_year + VIEW_X_MARGIN
+    const label = decade_labels[year + START_YEAR]
+    if (label) {
+      label.x = year * pixels_per_year + VIEW_X_MARGIN
+      label.visible = year_span <= 340 ? true : false
+    }
+  }
+}
+
+function update_century_label_positions() {
+  for (let year = 0; year <= YEAR_SPAN; year += 100) {
+    const label = century_labels[year + START_YEAR]
+    if (label) {
+      label.x = year * pixels_per_year + VIEW_X_MARGIN
+    }
   }
 }

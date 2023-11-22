@@ -1,4 +1,4 @@
-const THEME_VAR_NAMES: string[] = ['timeline-bg-color', 'year-tick-color', 'decade-tick-color']
+const THEME_VAR_NAMES: string[] = ['timeline-bg-color', 'year-tick-color', 'decade-tick-color', 'century-tick-color']
 
 export function get_theme() {
   const theme: { [prop: string]: string } = {}
