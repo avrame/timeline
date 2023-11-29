@@ -1,4 +1,10 @@
-const THEME_VAR_NAMES: string[] = ['timeline-bg-color', 'year-tick-color', 'decade-tick-color', 'century-tick-color']
+const THEME_VAR_NAMES: string[] = [
+  "timeline-bg-color",
+  "year-tick-color",
+  "decade-tick-color",
+  "century-tick-color",
+  "millennium-tick-color",
+]
 
 export function get_theme() {
   const theme: { [prop: string]: string } = {}
@@ -9,5 +15,7 @@ export function get_theme() {
 }
 
 function get_css_var(css_var_name: string) {
-  return getComputedStyle(document.documentElement).getPropertyValue(`--${css_var_name}`)
+  return getComputedStyle(document.documentElement).getPropertyValue(
+    `--${css_var_name}`,
+  )
 }

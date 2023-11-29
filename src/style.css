@@ -1,10 +1,11 @@
 :root {
   --page-bg-color: #222;
-  --timeline-bg-color: #AAA;
+  --timeline-bg-color: #aaa;
   --year-tick-color: #666;
-  --decade-tick-color: #333;
-  --century-tick-color: #000;
-  --mouse-year-color: #FFF;
+  --decade-tick-color: #666;
+  --century-tick-color: #333;
+  --millennium-tick-color: #000;
+  --mouse-year-color: #fff;
 }
 
 html,

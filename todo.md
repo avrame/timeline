@@ -5,3 +5,8 @@
 
 ## Features
 - fade labels/ticks in and out
+- add events
+- add timespans (like a person's lifetime, or a war)
+- add touch controls
+
+## Completed
