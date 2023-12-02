@@ -3,7 +3,7 @@ import * as PIXI from "pixi.js"
 import "@pixi/graphics-extras"
 import { format_year } from "./utils"
 import LabelContainer from "./LabelContainer"
-import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE } from "./config"
+import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE, END_YEAR } from "./config"
 import TickContainer from "./TickContainer"
 
 const timeline_div = document.getElementById("timeline") ?? undefined
@@ -17,6 +17,7 @@ const app = new PIXI.Application({
 const VIEW_X_POS = timeline_div?.getBoundingClientRect().x ?? 0
 
 let start_year = START_YEAR
+let end_year = END_YEAR
 let year_span = YEAR_SPAN
 let pixels_per_year = (app.view.width - 2 * VIEW_X_MARGIN) / year_span
 let zoom = 1.0
@@ -40,18 +41,23 @@ draw_ticks()
 
 app.stage.eventMode = "static"
 app.stage.hitArea = new PIXI.Rectangle(0, 0, app.view.width, app.view.height)
+
 window.addEventListener("resize", () => {
   pixels_per_year = calc_pixels_per_year(year_span)
 })
+
 app.stage.addEventListener("pointermove", (e) => {
   global_mouse_x = e.x
 })
+
 app.stage.addEventListener("wheel", handle_mouse_wheel)
+
 app.ticker.add((dt: number) => {
   mouse_x = global_mouse_x - VIEW_X_POS - VIEW_X_MARGIN
   mouse_year = start_year + mouse_x / pixels_per_year
   if (mouse_year_b) mouse_year_b.innerText = format_year(mouse_year).toString()
   start_year = START_YEAR - timeline_container.x / pixels_per_year
+  end_year = start_year + year_span + VIEW_X_MARGIN / pixels_per_year
   draw_ticks()
   update_label_positions(dt)
 })
@@ -67,13 +73,11 @@ function handle_mouse_wheel(e: WheelEvent) {
 
   // Prevents too much horizontal sliding when zooming
   const wheel_delta_x = e.deltaY > 2 ? 0 : e.deltaX
-  let x_offset =
-    -1 * ((mouse_x - timeline_container.x) * zoom_mult - mouse_x) -
-    wheel_delta_x
+  let x_offset = -1 * ((mouse_x - timeline_container.x) * zoom_mult - mouse_x) - wheel_delta_x
 
   if (x_offset > 0 || zoom === 1) {
     x_offset = 0
-  } else if (tl_container_width + timeline_container.x <= app.view.width) {
+  } else if (end_year >= END_YEAR + VIEW_X_MARGIN / pixels_per_year) {
     x_offset = app.view.width - tl_container_width
   }
   timeline_container.x = x_offset
@@ -108,9 +112,9 @@ function draw_ticks() {
 function update_label_positions(dt: number) {
   const years_in_margin = VIEW_X_MARGIN / pixels_per_year
   const visible_start_year = start_year - years_in_margin
-  const visible_end_year = visible_start_year + year_span + 2 * years_in_margin
+  const visible_end_year = start_year + year_span + years_in_margin
 
   for (const label_container of label_containers) {
-    label_container.update_labels(year_span, visible_start_year, visible_end_year, pixels_per_year, dt)
+    label_container.update_labels(year_span, visible_start_year, visible_end_year, pixels_per_year, app.view.height, dt)
   }
 }
