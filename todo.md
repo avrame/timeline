@@ -2,7 +2,8 @@
 
 ## Bugs
 
-- Bug: labels overlap when zooming out too fast
+- labels overlap when zooming out too fast
+- timeline jiggles back and forth very rapidly when scrolled all the way to the right
 
 ## Features
 

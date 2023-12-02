@@ -31,8 +31,9 @@ export default class LabelContainer {
       this.update_label_positions(visible_start_year, visible_end_year, app_height, pixels_per_year)
     } else {
       const visible = fade_out_container(this.pixi_container, dt)
-      if (visible)
+      if (visible) {
         this.update_label_positions(visible_start_year, visible_end_year, app_height, pixels_per_year)
+      }
     }
   }
 
