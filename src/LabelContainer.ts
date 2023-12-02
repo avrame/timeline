@@ -1,33 +1,18 @@
 import { Container, Text, TextStyle } from 'pixi.js'
 import { fade_in_container, fade_out_container, format_year } from './utils'
-import { END_YEAR, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN } from './config'
-
-type ConstructorOptions = {
-  label_year_span: number,
-  pixels_per_year: number,
-  app_height: number,
-  tick_height: number,
-  label_style: TextStyle,
-  timeline_container: Container
-  year_span_label_visible: number
-}
+import { END_YEAR, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, TICK_AND_LABEL_CONFIGS } from './config'
 
 export default class LabelContainer {
-  label_year_span: number
+  years_level: number
   year_span_label_visible: number
   pixi_container: Container = new Container()
   labels: { [year: number]: Text } = {}
 
-  constructor({
-    label_year_span,
-    pixels_per_year,
-    app_height,
-    tick_height,
-    label_style,
-    timeline_container,
-    year_span_label_visible
-  }: ConstructorOptions) {
-    this.label_year_span = label_year_span
+  constructor(years_level:number, pixels_per_year: number, app_height: number, timeline_container: Container) {
+    const config = TICK_AND_LABEL_CONFIGS[years_level]
+    const { year_span_label_visible, tick_height, label_style } = config
+
+    this.years_level = years_level
     this.year_span_label_visible = year_span_label_visible
     this.pixi_container.alpha = 0
 
@@ -48,8 +33,8 @@ export default class LabelContainer {
   }
 
   private create_labels(pixels_per_year: number, app_height: number, tick_height: number, label_style: TextStyle) {
-    for (let y = START_YEAR; y <= END_YEAR; y += this.label_year_span) {
-      if (y % (10 * this.label_year_span) !== 0 || this.label_year_span === 1000) {
+    for (let y = START_YEAR; y <= END_YEAR; y += this.years_level) {
+      if (y % (10 * this.years_level) !== 0 || this.years_level === 1000) {
         const label = new Text(format_year(y), label_style)
         label.x = (y - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
         label.y = app_height - tick_height
@@ -61,7 +46,7 @@ export default class LabelContainer {
   }
 
   private update_label_positions(visible_start_year: number, visible_end_year: number, pixels_per_year: number) {
-    for (let year_count = 0; year_count <= YEAR_SPAN; year_count += this.label_year_span) {
+    for (let year_count = 0; year_count <= YEAR_SPAN; year_count += this.years_level) {
       const year = year_count + START_YEAR
       const label = this.labels[year]
       if (label) {

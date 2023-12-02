@@ -1,16 +1,13 @@
 import "./style.css"
 import * as PIXI from "pixi.js"
 import "@pixi/graphics-extras"
-import { get_theme } from "./theme"
 import { format_year } from "./utils"
 import LabelContainer from "./LabelContainer"
-import { CENTURY_TICK_HEIGHT, DECADE_TICK_HEIGHT, MAX_ZOOM, MILLENNIUM_TICK_HEIGHT, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, YEAR_SPAN_CENTURY_LABEL_VISIBLE, YEAR_SPAN_CENTURY_TICK_VISIBLE, YEAR_SPAN_DECADE_LABEL_VISIBLE, YEAR_SPAN_DECADE_TICK_VISIBLE, YEAR_SPAN_MILLENNIUM_LABEL_VISIBLE, YEAR_SPAN_MILLENNIUM_TICK_VISIBLE, YEAR_SPAN_YEAR_LABEL_VISIBLE, YEAR_SPAN_YEAR_TICK_VISIBLE, YEAR_TICK_HEIGHT, ZOOM_RATE, century_text_style, decade_text_style, millennium_text_style, year_text_style } from "./config"
+import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE } from "./config"
 import TickContainer from "./TickContainer"
 
 const timeline_div = document.getElementById("timeline") ?? undefined
 const mouse_year_b = document.getElementById("mouse_year") ?? undefined
-
-const theme = get_theme()
 
 const app = new PIXI.Application({
   background: theme["timeline-bg-color"],
@@ -31,50 +28,12 @@ timeline_div?.appendChild(app.view as unknown as Node)
 
 const timeline_container = new PIXI.Container()
 
-// Create label containers
-const millennium_label_container = new LabelContainer({
-  label_year_span: 1000,
-  pixels_per_year,
-  app_height: app.view.height,
-  tick_height: MILLENNIUM_TICK_HEIGHT,
-  label_style: millennium_text_style,
-  timeline_container,
-  year_span_label_visible: YEAR_SPAN_MILLENNIUM_LABEL_VISIBLE
-})
-const century_label_container = new LabelContainer({
-  label_year_span: 100,
-  pixels_per_year,
-  app_height: app.view.height,
-  tick_height: CENTURY_TICK_HEIGHT,
-  label_style: century_text_style,
-  timeline_container,
-  year_span_label_visible: YEAR_SPAN_CENTURY_LABEL_VISIBLE
-})
-const decade_label_container = new LabelContainer({
-  label_year_span: 10,
-  pixels_per_year,
-  app_height: app.view.height,
-  tick_height: DECADE_TICK_HEIGHT,
-  label_style: decade_text_style,
-  timeline_container,
-  year_span_label_visible: YEAR_SPAN_DECADE_LABEL_VISIBLE
-})
-const year_label_container = new LabelContainer({
-  label_year_span: 1,
-  pixels_per_year,
-  app_height: app.view.height,
-  tick_height: YEAR_TICK_HEIGHT,
-  label_style: year_text_style,
-  timeline_container,
-  year_span_label_visible: YEAR_SPAN_YEAR_LABEL_VISIBLE
-})
-const label_containers = [millennium_label_container, century_label_container, decade_label_container, year_label_container]
-
-const millennium_ticks = new TickContainer(1000, timeline_container, YEAR_SPAN_MILLENNIUM_TICK_VISIBLE, MILLENNIUM_TICK_HEIGHT, theme["millennium-tick-color"])
-const century_ticks = new TickContainer(100, timeline_container, YEAR_SPAN_CENTURY_TICK_VISIBLE, CENTURY_TICK_HEIGHT, theme["century-tick-color"])
-const decade_ticks = new TickContainer(10, timeline_container, YEAR_SPAN_DECADE_TICK_VISIBLE, DECADE_TICK_HEIGHT, theme["decade-tick-color"])
-const year_ticks = new TickContainer(1, timeline_container, YEAR_SPAN_YEAR_TICK_VISIBLE, YEAR_TICK_HEIGHT, theme["year-tick-color"])
-const tick_containers = [year_ticks, decade_ticks, century_ticks, millennium_ticks]
+const label_containers: LabelContainer[] = []
+const tick_containers: TickContainer[] = []
+for (let i = 1; i <= 1000; i *= 10) {
+  label_containers.push(new LabelContainer(i, pixels_per_year, app.view.height, timeline_container))
+  tick_containers.push(new TickContainer(i, timeline_container))
+}
 
 app.stage.addChild(timeline_container)
 draw_ticks()

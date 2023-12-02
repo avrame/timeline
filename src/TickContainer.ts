@@ -1,5 +1,5 @@
 import { Container, Graphics } from "pixi.js";
-import { START_YEAR, VIEW_X_MARGIN } from "./config";
+import { START_YEAR, TICK_AND_LABEL_CONFIGS, VIEW_X_MARGIN } from "./config";
 
 export default class TickContainer {
   tick_year_span: number
@@ -8,9 +8,11 @@ export default class TickContainer {
   tick_color: string
   pixi_graphics: Graphics = new Graphics()
 
-  constructor(tick_year_span: number, timeline_container: Container, year_span_visible: number, tick_height: number, tick_color: string) {
+  constructor(tick_year_span: number, timeline_container: Container) {
+    const config = TICK_AND_LABEL_CONFIGS[tick_year_span]
+    const { year_span_tick_visible, tick_height, tick_color } = config
     this.tick_year_span = tick_year_span
-    this.year_span_visible = year_span_visible
+    this.year_span_visible = year_span_tick_visible
     this.tick_height = tick_height
     this.tick_color = tick_color
 
