@@ -29,11 +29,17 @@ timeline_div?.appendChild(app.view as unknown as Node)
 
 const timeline_container = new PIXI.Container()
 
+// Create arrays of label and tick containers
 const label_containers: LabelContainer[] = []
 const tick_containers: TickContainer[] = []
 for (let i = 1; i <= 1000; i *= 10) {
-  label_containers.push(new LabelContainer(i, pixels_per_year, app.view.height, timeline_container))
-  tick_containers.push(new TickContainer(i, timeline_container))
+  const label_container = new LabelContainer(i, pixels_per_year, app.view.height)
+  label_container.add_to(timeline_container)
+  label_containers.push(label_container)
+
+  const tick_container = new TickContainer(i)
+  tick_container.add_to(timeline_container)
+  tick_containers.push(tick_container)
 }
 
 app.stage.addChild(timeline_container)
@@ -69,6 +75,7 @@ function handle_mouse_wheel(e: WheelEvent) {
   const zoom_mult = calc_zoom(e.deltaY)
   year_span = YEAR_SPAN / zoom
   pixels_per_year = calc_pixels_per_year(year_span)
+  console.log(pixels_per_year)
   const tl_container_width = YEAR_SPAN * pixels_per_year + 2 * VIEW_X_MARGIN
 
   // Prevents too much horizontal sliding when zooming
@@ -115,6 +122,6 @@ function update_label_positions(dt: number) {
   const visible_end_year = start_year + year_span + years_in_margin
 
   for (const label_container of label_containers) {
-    label_container.update_labels(year_span, visible_start_year, visible_end_year, pixels_per_year, app.view.height, dt)
+    label_container.update_labels(visible_start_year, visible_end_year, pixels_per_year, app.view.height, dt)
   }
 }

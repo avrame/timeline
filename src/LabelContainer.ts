@@ -5,26 +5,28 @@ import { END_YEAR, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, TICK_AND_LABEL_CONFIGS 
 export default class LabelContainer {
   tick_height: number
   years_level: number
-  year_span_label_visible: number
+  pixels_per_year_label_visible: number
   pixi_container: Container = new Container()
   labels: { [year: number]: Text } = {}
 
-  constructor(years_level:number, pixels_per_year: number, app_height: number, timeline_container: Container) {
+  constructor(years_level:number, pixels_per_year: number, app_height: number) {
     const config = TICK_AND_LABEL_CONFIGS[years_level]
-    const { year_span_label_visible, tick_height, label_style } = config
+    const { pixels_per_year_label_visible, tick_height, label_style } = config
 
     this.tick_height = tick_height
     this.years_level = years_level
-    this.year_span_label_visible = year_span_label_visible
+    this.pixels_per_year_label_visible = pixels_per_year_label_visible
     this.pixi_container.alpha = 0
 
     this.create_labels(pixels_per_year, app_height, label_style)
+  }
 
+  add_to(timeline_container: Container) {
     timeline_container.addChild(this.pixi_container)
   }
 
-  update_labels(year_span: number, visible_start_year: number, visible_end_year: number, pixels_per_year: number, app_height: number, dt: number) {
-    if (year_span <= this.year_span_label_visible) {
+  update_labels(visible_start_year: number, visible_end_year: number, pixels_per_year: number, app_height: number, dt: number) {
+    if (pixels_per_year >= this.pixels_per_year_label_visible) {
       fade_in_container(this.pixi_container, dt)
       this.update_label_positions(visible_start_year, visible_end_year, app_height, pixels_per_year)
     } else {
