@@ -25,14 +25,20 @@ export default class LabelContainer {
     timeline_container.addChild(this.pixi_container)
   }
 
-  update_labels(visible_start_year: number, visible_end_year: number, pixels_per_year: number, app_height: number, dt: number) {
+  update_labels(visible_start_year: number, visible_end_year: number, pixels_per_year: number, app_height: number, wheel_delta_y:number, dt: number) {
     if (pixels_per_year >= this.pixels_per_year_label_visible) {
       fade_in_container(this.pixi_container, dt)
       this.update_label_positions(visible_start_year, visible_end_year, app_height, pixels_per_year)
     } else {
-      const visible = fade_out_container(this.pixi_container, dt)
-      if (visible) {
-        this.update_label_positions(visible_start_year, visible_end_year, app_height, pixels_per_year)
+      if (wheel_delta_y > -10) {
+        // Zoom rate is slow enough to fade the labels
+        const visible = fade_out_container(this.pixi_container, dt)
+        if (visible) {
+          this.update_label_positions(visible_start_year, visible_end_year, app_height, pixels_per_year)
+        }
+      } else {
+        // Zoom rate is too fast - just hide the labels immediately so that they don't bunch up
+        this.pixi_container.alpha = 0
       }
     }
   }

@@ -1,6 +1,6 @@
 import { Container } from "pixi.js"
 
-const FADE_SPEED = 0.05
+const FADE_SPEED = 0.025
 
 export function format_year(year: number) {
   const era = year < 0 ? 'BCE' : 'CE'

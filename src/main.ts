@@ -24,6 +24,7 @@ let zoom = 1.0
 let global_mouse_x = app.view.width / 2
 let mouse_x = 0
 let mouse_year
+let wheel_delta_y = 0
 
 timeline_div?.appendChild(app.view as unknown as Node)
 
@@ -58,14 +59,16 @@ app.stage.addEventListener("pointermove", (e) => {
 app.stage.addEventListener("wheel", (e: WheelEvent) => {
   e.preventDefault()
 
+  wheel_delta_y = e.deltaY
+
   global_mouse_x = e.x
-  const zoom_mult = calc_zoom(e.deltaY)
+  const zoom_mult = calc_zoom(wheel_delta_y)
   visible_year_span = YEAR_SPAN / zoom
   pixels_per_year = calc_pixels_per_year(visible_year_span)
   const tl_container_width = YEAR_SPAN * pixels_per_year + 2 * VIEW_X_MARGIN
 
   // Prevents too much horizontal sliding when zooming
-  const wheel_delta_x = e.deltaY > 2 ? 0 : e.deltaX
+  const wheel_delta_x = wheel_delta_y > 2 ? 0 : e.deltaX
   let x_offset = -((mouse_x - timeline_container.x) * zoom_mult - mouse_x) - wheel_delta_x
 
   if (x_offset > 0 || zoom === 1) {
@@ -108,7 +111,7 @@ function calc_zoom(delta_y: number): number {
 
 function draw_ticks(dt: number) {
   for (const tick_container of tick_containers) {
-    tick_container.draw(visible_start_year, visible_year_span, pixels_per_year, app.view.height, dt)
+    tick_container.draw(visible_start_year, visible_year_span, pixels_per_year, app.view.height, wheel_delta_y, dt)
   }
 }
 
@@ -118,6 +121,6 @@ function update_label_positions(dt: number) {
   const visible_end_year = visible_start_year + visible_year_span + years_in_margin
 
   for (const label_container of label_containers) {
-    label_container.update_labels(visible_start_year_adjusted, visible_end_year, pixels_per_year, app.view.height, dt)
+    label_container.update_labels(visible_start_year_adjusted, visible_end_year, pixels_per_year, app.view.height, wheel_delta_y, dt)
   }
 }

@@ -25,7 +25,7 @@ export default class TickContainer {
     timeline_container.addChild(this.pixi_container)
   }
 
-  draw(start_year: number, year_span: number, pixels_per_year: number, app_height: number, dt: number) {
+  draw(start_year: number, year_span: number, pixels_per_year: number, app_height: number, wheel_delta_y: number, dt: number) {
     this.pixi_graphics.clear()
     this.pixi_graphics.lineStyle({ width: 1, color: this.tick_color })
     const start_year_span = Math.floor(start_year / this.tick_year_span) * this.tick_year_span
@@ -41,7 +41,13 @@ export default class TickContainer {
     if (pixels_per_year >= this.pixels_per_year_visible) {
       fade_in_container(this.pixi_container, dt)
     } else {
-      fade_out_container(this.pixi_container, dt)
+      if (wheel_delta_y > -10) {
+        // Zoom rate is slow enough to fade the ticks
+        fade_out_container(this.pixi_container, dt)
+      } else {
+        // Zoom rate is too fast - just hide the ticks immediately so that they don't bunch up
+        this.pixi_container.alpha = 0
+      }
     }
   }
 }
