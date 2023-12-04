@@ -45,7 +45,7 @@ export const TICK_AND_LABEL_CONFIGS: {[year_span: number]: LabelConfig} = {
   100: {
     tick_height: 96,
     label_style: century_text_style,
-    pixels_per_year_label_visible: 0.6,
+    pixels_per_year_label_visible: 0.5,
     pixels_per_year_tick_visible: 0.25,
     tick_color: theme['--century-tick-color'],
   },

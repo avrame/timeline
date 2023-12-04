@@ -2,9 +2,9 @@ import "./style.css"
 import * as PIXI from "pixi.js"
 import "@pixi/graphics-extras"
 import { format_year } from "./utils"
-import LabelContainer from "./LabelContainer"
+import LabelGroup from "./LabelGroup"
 import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE, END_YEAR } from "./config"
-import TickContainer from "./TickContainer"
+import TickGroup from "./TickGroup"
 
 const timeline_div = document.getElementById("timeline") ?? undefined
 const mouse_year_b = document.getElementById("mouse_year") ?? undefined
@@ -31,16 +31,16 @@ timeline_div?.appendChild(app.view as unknown as Node)
 const timeline_container = new PIXI.Container()
 
 // Create arrays of label and tick containers
-const label_containers: LabelContainer[] = []
-const tick_containers: TickContainer[] = []
+const label_groups: LabelGroup[] = []
+const tick_groups: TickGroup[] = []
 for (let i = 1; i <= 1000; i *= 10) {
-  const label_container = new LabelContainer(i, pixels_per_year, app.view.height)
+  const label_container = new LabelGroup(i, pixels_per_year, app.view.height)
   label_container.add_to(timeline_container)
-  label_containers.push(label_container)
+  label_groups.push(label_container)
 
-  const tick_container = new TickContainer(i)
+  const tick_container = new TickGroup(i)
   tick_container.add_to(timeline_container)
-  tick_containers.push(tick_container)
+  tick_groups.push(tick_container)
 }
 
 app.stage.addChild(timeline_container)
@@ -110,7 +110,7 @@ function calc_zoom(delta_y: number): number {
 }
 
 function draw_ticks(dt: number) {
-  for (const tick_container of tick_containers) {
+  for (const tick_container of tick_groups) {
     tick_container.draw(visible_start_year, visible_year_span, pixels_per_year, app.view.height, wheel_delta_y, dt)
   }
 }
@@ -118,9 +118,9 @@ function draw_ticks(dt: number) {
 function update_label_positions(dt: number) {
   const years_in_margin = VIEW_X_MARGIN / pixels_per_year
   const visible_start_year_adjusted = visible_start_year - years_in_margin
-  const visible_end_year = visible_start_year + visible_year_span + years_in_margin
+  const visible_end_year_adjusted = visible_start_year + visible_year_span + years_in_margin
 
-  for (const label_container of label_containers) {
-    label_container.update_labels(visible_start_year_adjusted, visible_end_year, pixels_per_year, app.view.height, wheel_delta_y, dt)
+  for (const label_container of label_groups) {
+    label_container.update_labels(visible_start_year_adjusted, visible_end_year_adjusted, pixels_per_year, app.view.height, wheel_delta_y, dt)
   }
 }
