@@ -3,7 +3,7 @@ import * as PIXI from "pixi.js"
 import "@pixi/graphics-extras"
 import { format_year } from "./utils"
 import LabelGroup from "./LabelGroup"
-import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE, END_YEAR } from "./config"
+import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE, END_YEAR, MAX_LABEL_YEAR_SPAN } from "./config"
 import TickGroup from "./TickGroup"
 
 const timeline_div = document.getElementById("timeline") ?? undefined
@@ -33,7 +33,7 @@ const timeline_container = new PIXI.Container()
 // Create arrays of label and tick containers
 const label_groups: LabelGroup[] = []
 const tick_groups: TickGroup[] = []
-for (let i = 1; i <= 1000; i *= 10) {
+for (let i = 1; i <= MAX_LABEL_YEAR_SPAN; i *= 10) {
   const label_container = new LabelGroup(i, pixels_per_year, app.view.height)
   label_container.add_to(timeline_container)
   label_groups.push(label_container)
@@ -111,7 +111,7 @@ function calc_zoom(delta_y: number): number {
 
 function draw_ticks(dt: number) {
   for (const tick_container of tick_groups) {
-    tick_container.draw(visible_start_year, visible_year_span, pixels_per_year, app.view.height, wheel_delta_y, dt)
+    tick_container.draw(pixels_per_year, app.view.height, wheel_delta_y, dt)
   }
 }
 

@@ -1,20 +1,20 @@
 import { Container, Text, TextStyle } from 'pixi.js'
 import { fade_in_container, fade_out_container, format_year } from './utils'
-import { END_YEAR, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, TICK_AND_LABEL_CONFIGS } from './config'
+import { END_YEAR, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, TICK_AND_LABEL_CONFIGS, MAX_LABEL_YEAR_SPAN } from './config'
 
 export default class LabelContainer {
   tick_height: number
-  years_level: number
+  label_year_span: number
   pixels_per_year_label_visible: number
   pixi_container: Container = new Container()
   labels: { [year: number]: Text } = {}
 
-  constructor(years_level:number, pixels_per_year: number, app_height: number) {
-    const config = TICK_AND_LABEL_CONFIGS[years_level]
+  constructor(label_year_span:number, pixels_per_year: number, app_height: number) {
+    const config = TICK_AND_LABEL_CONFIGS[label_year_span]
     const { pixels_per_year_label_visible, tick_height, label_style } = config
 
     this.tick_height = tick_height
-    this.years_level = years_level
+    this.label_year_span = label_year_span
     this.pixels_per_year_label_visible = pixels_per_year_label_visible
     this.pixi_container.alpha = 0
 
@@ -44,25 +44,22 @@ export default class LabelContainer {
   }
 
   private create_labels(pixels_per_year: number, app_height: number, label_style: TextStyle) {
-    for (let y = START_YEAR; y <= END_YEAR; y += this.years_level) {
-      if (y % (10 * this.years_level) !== 0 || this.years_level === 1000) {
-        const label = new Text(format_year(y), label_style)
-        label.x = (y - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
-        label.y = app_height - this.tick_height
+    for (let year = START_YEAR; year <= END_YEAR; year += this.label_year_span) {
+      if (year % (10 * this.label_year_span) !== 0 || this.label_year_span === MAX_LABEL_YEAR_SPAN) {
+        const label = new Text(format_year(year), label_style)
         label.anchor.set(0.5, 1)
         this.pixi_container.addChild(label)
-        this.labels[y] = label
+        this.labels[year] = label
       }
     }
   }
 
   private update_label_positions(visible_start_year: number, visible_end_year: number, app_height: number, pixels_per_year: number) {
-    for (let year_count = 0; year_count <= YEAR_SPAN; year_count += this.years_level) {
-      const year = year_count + START_YEAR
+    for (let year = START_YEAR; year <= YEAR_SPAN; year += this.label_year_span) {
       const label = this.labels[year]
       if (label) {
         if (year >= visible_start_year && year <= visible_end_year) {
-          label.x = year_count * pixels_per_year + VIEW_X_MARGIN
+          label.x = (year - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
           label.y = app_height - this.tick_height
           label.visible = true
         } else {

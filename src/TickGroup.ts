@@ -1,5 +1,5 @@
 import { Container, Graphics } from "pixi.js";
-import { START_YEAR, TICK_AND_LABEL_CONFIGS, VIEW_X_MARGIN } from "./config";
+import { END_YEAR, MAX_LABEL_YEAR_SPAN, START_YEAR, TICK_AND_LABEL_CONFIGS, VIEW_X_MARGIN } from "./config";
 import { fade_in_container, fade_out_container } from "./utils";
 
 export default class TickContainer {
@@ -25,15 +25,12 @@ export default class TickContainer {
     timeline_container.addChild(this.pixi_container)
   }
 
-  draw(start_year: number, year_span: number, pixels_per_year: number, app_height: number, wheel_delta_y: number, dt: number) {
+  draw(pixels_per_year: number, app_height: number, wheel_delta_y: number, dt: number) {
     this.pixi_graphics.clear()
     this.pixi_graphics.lineStyle({ width: 1, color: this.tick_color })
-    const start_year_span = Math.floor(start_year / this.tick_year_span) * this.tick_year_span
-    const start = Math.floor(start_year_span - START_YEAR)
-    const end = Math.ceil(start_year_span + year_span + this.tick_year_span)
-    for (let year_count = start; year_count <= end; year_count += this.tick_year_span) {
-      if (year_count % (10 * this.tick_year_span) !== 0 || this.tick_year_span === 1000) {
-        const x_pos = year_count * pixels_per_year + VIEW_X_MARGIN
+    for (let year_count = START_YEAR; year_count <= END_YEAR; year_count += this.tick_year_span) {
+      if (year_count % (10 * this.tick_year_span) !== 0 || this.tick_year_span === MAX_LABEL_YEAR_SPAN) {
+        const x_pos = (year_count - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
         this.pixi_graphics.moveTo(x_pos, app_height)
         this.pixi_graphics.lineTo(x_pos, app_height - this.tick_height)
       }
