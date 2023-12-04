@@ -65,15 +65,15 @@ app.stage.addEventListener("wheel", (e: WheelEvent) => {
   const zoom_mult = calc_zoom(wheel_delta_y)
   visible_year_span = YEAR_SPAN / zoom
   pixels_per_year = calc_pixels_per_year(visible_year_span)
-  const tl_container_width = YEAR_SPAN * pixels_per_year + 2 * VIEW_X_MARGIN
-
+  
   // Prevents too much horizontal sliding when zooming
   const wheel_delta_x = wheel_delta_y > 2 ? 0 : e.deltaX
   let x_offset = -((mouse_x - timeline_container.x) * zoom_mult - mouse_x) - wheel_delta_x
-
+  
   if (x_offset > 0 || zoom === 1) {
     x_offset = 0
-  } else if (visible_end_year >= END_YEAR + (VIEW_X_MARGIN + .2) / pixels_per_year) {
+  } else if (visible_end_year >= END_YEAR + VIEW_X_MARGIN / pixels_per_year) {
+    const tl_container_width = YEAR_SPAN * pixels_per_year + 2 * VIEW_X_MARGIN
     x_offset = app.view.width - tl_container_width
   }
   timeline_container.x = x_offset
