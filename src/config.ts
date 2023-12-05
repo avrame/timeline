@@ -12,7 +12,7 @@ export const YEAR_SPAN = END_YEAR - START_YEAR
 export const MAX_LABEL_YEAR_SPAN = 1000
 
 export const MIN_ZOOM = 1
-export const MAX_ZOOM = YEAR_SPAN / 2
+export const MAX_ZOOM = YEAR_SPAN / 5
 export const ZOOM_RATE = 0.005
 
 export const millennium_text_style = new TextStyle({

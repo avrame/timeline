@@ -5,6 +5,8 @@ import { format_year } from "./utils"
 import LabelGroup from "./LabelGroup"
 import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE, END_YEAR, MAX_LABEL_YEAR_SPAN } from "./config"
 import TickGroup from "./TickGroup"
+import events from './events.json'
+import TimelineEvent from "./TimelineEvent"
 
 const timeline_div = document.getElementById("timeline") ?? undefined
 const mouse_year_b = document.getElementById("mouse_year") ?? undefined
@@ -34,13 +36,19 @@ const timeline_container = new PIXI.Container()
 const label_groups: LabelGroup[] = []
 const tick_groups: TickGroup[] = []
 for (let i = 1; i <= MAX_LABEL_YEAR_SPAN; i *= 10) {
-  const label_container = new LabelGroup(i, pixels_per_year, app.view.height)
-  label_container.add_to(timeline_container)
-  label_groups.push(label_container)
+  const label_group = new LabelGroup(i, pixels_per_year, app.view.height)
+  label_group.add_to(timeline_container)
+  label_groups.push(label_group)
 
-  const tick_container = new TickGroup(i)
-  tick_container.add_to(timeline_container)
-  tick_groups.push(tick_container)
+  const tick_group = new TickGroup(i)
+  tick_group.add_to(timeline_container)
+  tick_groups.push(tick_group)
+}
+
+const event_objects: TimelineEvent[] = []
+for (let event_data of events) {
+  const event_obj = new TimelineEvent(event_data, timeline_container)
+  event_objects.push(event_obj)
 }
 
 app.stage.addChild(timeline_container)
@@ -85,8 +93,14 @@ app.ticker.add((dt: number) => {
   if (mouse_year_b) mouse_year_b.innerText = format_year(mouse_year).toString()
   visible_start_year = START_YEAR - timeline_container.x / pixels_per_year
   visible_end_year = visible_start_year + visible_year_span + VIEW_X_MARGIN / pixels_per_year
+
+
+  const years_in_margin = VIEW_X_MARGIN / pixels_per_year
+  const visible_start_year_adjusted = visible_start_year - years_in_margin
+  const visible_end_year_adjusted = visible_start_year + visible_year_span + years_in_margin
   draw_ticks(dt)
-  update_label_positions(dt)
+  update_label_positions(dt, visible_start_year_adjusted, visible_end_year_adjusted)
+  draw_events(visible_start_year_adjusted, visible_end_year_adjusted)
 })
 
 function calc_pixels_per_year(year_span: number) {
@@ -115,12 +129,16 @@ function draw_ticks(dt: number) {
   }
 }
 
-function update_label_positions(dt: number) {
-  const years_in_margin = VIEW_X_MARGIN / pixels_per_year
-  const visible_start_year_adjusted = visible_start_year - years_in_margin
-  const visible_end_year_adjusted = visible_start_year + visible_year_span + years_in_margin
+function update_label_positions(dt: number, visible_start_year_adjusted: number, visible_end_year_adjusted: number) {
 
   for (const label_container of label_groups) {
     label_container.update_labels(visible_start_year_adjusted, visible_end_year_adjusted, pixels_per_year, app.view.height, wheel_delta_y, dt)
+  }
+}
+
+function draw_events(visible_start_year_adjusted: number, visible_end_year_adjusted: number) {
+  for (const event_obj of event_objects) {
+    // console.log(event_obj.log())
+    event_obj.draw(visible_start_year_adjusted, visible_end_year_adjusted, pixels_per_year, app.view.height)
   }
 }
