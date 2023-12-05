@@ -1,6 +1,6 @@
-import { Container, Graphics } from "pixi.js";
-import { END_YEAR, MAX_LABEL_YEAR_SPAN, START_YEAR, TICK_AND_LABEL_CONFIGS, VIEW_X_MARGIN } from "./config";
-import { fade_in_container, fade_out_container } from "./utils";
+import { Container, Graphics } from 'pixi.js'
+import { END_YEAR, MAX_LABEL_YEAR_SPAN, START_YEAR, TICK_AND_LABEL_CONFIGS, VIEW_X_MARGIN } from './config'
+import { fade_in_container, fade_out_container } from './utils'
 
 export default class TickContainer {
   tick_year_span: number

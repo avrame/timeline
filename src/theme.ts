@@ -1,12 +1,12 @@
 const THEME_VAR_NAMES: string[] = [
-  "timeline-bg-color",
-  "year-tick-color",
-  "decade-tick-color",
-  "century-tick-color",
-  "millennium-tick-color",
-  "event-circle-fill-color",
-  "event-circle-hover-fill-color",
-  "event-circle-focus-fill-color",
+  'timeline-bg-color',
+  'year-tick-color',
+  'decade-tick-color',
+  'century-tick-color',
+  'millennium-tick-color',
+  'event-circle-fill-color',
+  'event-circle-hover-fill-color',
+  'event-circle-focus-fill-color',
 ]
 
 export function get_theme() {

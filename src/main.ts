@@ -1,18 +1,18 @@
-import "./style.css"
-import * as PIXI from "pixi.js"
-import "@pixi/graphics-extras"
-import { format_year } from "./utils"
-import LabelGroup from "./LabelGroup"
-import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE, END_YEAR, MAX_LABEL_YEAR_SPAN } from "./config"
-import TickGroup from "./TickGroup"
+import './style.css'
+import * as PIXI from 'pixi.js'
+import '@pixi/graphics-extras'
+import { format_year } from './utils'
+import LabelGroup from './LabelGroup'
+import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE, END_YEAR, MAX_LABEL_YEAR_SPAN } from './config'
+import TickGroup from './TickGroup'
 import events from './events.json'
-import TimelineEvent from "./TimelineEvent"
+import TimelineEvent from './TimelineEvent'
 
-const timeline_div = document.getElementById("timeline") ?? undefined
-const mouse_year_b = document.getElementById("mouse_year") ?? undefined
+const timeline_div = document.getElementById('timeline') ?? undefined
+const mouse_year_b = document.getElementById('mouse_year') ?? undefined
 
 const app = new PIXI.Application({
-  background: theme["timeline-bg-color"],
+  background: theme['timeline-bg-color'],
   resizeTo: timeline_div,
 })
 
@@ -46,25 +46,25 @@ for (let i = 1; i <= MAX_LABEL_YEAR_SPAN; i *= 10) {
 }
 
 const event_objects: TimelineEvent[] = []
-for (let event_data of events) {
+for (const event_data of events) {
   const event_obj = new TimelineEvent(event_data, timeline_container)
   event_objects.push(event_obj)
 }
 
 app.stage.addChild(timeline_container)
 
-app.stage.eventMode = "static"
+app.stage.eventMode = 'static'
 app.stage.hitArea = new PIXI.Rectangle(0, 0, app.view.width, app.view.height)
 
-window.addEventListener("resize", () => {
+window.addEventListener('resize', () => {
   pixels_per_year = calc_pixels_per_year(visible_year_span)
 })
 
-app.stage.addEventListener("pointermove", (e) => {
+app.stage.addEventListener('pointermove', (e) => {
   global_mouse_x = e.x
 })
 
-app.stage.addEventListener("wheel", (e: WheelEvent) => {
+app.stage.addEventListener('wheel', (e: WheelEvent) => {
   e.preventDefault()
 
   wheel_delta_y = e.deltaY

@@ -1,4 +1,4 @@
-import { Container } from "pixi.js"
+import { Container } from 'pixi.js'
 
 const FADE_SPEED = 0.025
 const MS_IN_YEAR = 365 * 24 * 60 * 60 * 1000

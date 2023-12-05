@@ -1,5 +1,5 @@
-import { TextStyle } from "pixi.js"
-import { get_theme } from "./theme"
+import { TextStyle } from 'pixi.js'
+import { get_theme } from './theme'
 
 export const VIEW_X_MARGIN = 50
 
