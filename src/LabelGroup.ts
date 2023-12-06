@@ -17,6 +17,7 @@ export default class LabelContainer {
     this.label_year_span = label_year_span
     this.pixels_per_year_label_visible = pixels_per_year_label_visible
     this.pixi_container.alpha = 0
+    this.pixi_container.eventMode = 'none'
 
     this.create_labels(pixels_per_year, app_height, label_style)
   }

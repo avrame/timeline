@@ -34,7 +34,7 @@ export default class TimelineEvent {
 
     this.date_float = date_to_event_x(new Date(event_data.date))
     this.hit_area.radius = TimelineEvent.circle_radius
-    this.pixi_graphics.eventMode = 'static'
+    this.pixi_graphics.eventMode = 'dynamic'
     this.pixi_graphics.hitArea = this.hit_area
     this.pixi_graphics.cursor = 'pointer'
     this.pixi_graphics.on('pointerenter', this.handle_pointer_enter, this)

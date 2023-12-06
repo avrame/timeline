@@ -5,7 +5,7 @@ import { format_year } from './utils'
 import LabelGroup from './LabelGroup'
 import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE, END_YEAR, MAX_LABEL_YEAR_SPAN } from './config'
 import TickGroup from './TickGroup'
-import events from './events.json'
+import events from './data/events'
 import TimelineEvent from './TimelineEvent'
 
 const timeline_div = document.getElementById('timeline') ?? undefined
