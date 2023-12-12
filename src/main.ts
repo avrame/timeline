@@ -194,6 +194,6 @@ function draw_events(
 
 function draw_timespans() {
   for (const timespan_obj of timespan_objects) {
-    timespan_obj.draw(pixels_per_year)
+    timespan_obj.draw(pixels_per_year, app.view.width)
   }
 }
