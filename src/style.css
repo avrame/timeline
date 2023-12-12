@@ -7,7 +7,7 @@
   --century-tick-color: #333;
   --millennium-tick-color: #000;
 
-  --mouse-year-color: #333;
+  --mouse-year-color: #FFF;
 
   --event-circle-line-color: #668;
   --event-circle-fill-color: #99c;
@@ -30,12 +30,20 @@
 html,
 body {
   overscroll-behavior: none;
+  font-family: Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro, sans-serif;
+  font-weight: normal;
 }
 
 body {
   padding: 0;
   margin: 0;
   background-color: var(--page-bg-color);
+  font-size: 12px;
+}
+
+h1 {
+  font-size: 2rem;
+  margin: 0;
 }
 
 main {
@@ -43,6 +51,16 @@ main {
   flex-direction: column;
   justify-content: stretch;
   height: 100vh;
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  color: #fff;
 }
 
 #timeline {
@@ -56,9 +74,7 @@ main {
 }
 
 #mouse_year {
-  position: absolute;
-  inset: 0 0 auto auto;
+  font-size: 1.2rem;
   color: var(--mouse-year-color);
   text-align: center;
-  padding: 1rem;
 }
