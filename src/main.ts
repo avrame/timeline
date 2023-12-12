@@ -1,5 +1,5 @@
 import './style.css'
-import * as PIXI from 'pixi.js'
+import { Application, Container, Rectangle } from 'pixi.js'
 import '@pixi/graphics-extras'
 import { format_year } from './utils'
 import LabelGroup from './LabelGroup'
@@ -18,12 +18,12 @@ import TickGroup from './TickGroup'
 import TimelineEvent from './TimelineEvent'
 import TimeSpan from './TimeSpan'
 import events from './data/events'
-import time_spans from './data/time-spans'
+import { Civilization, civ_timespans } from './data/time-spans'
 
 const timeline_div = document.getElementById('timeline') ?? undefined
 const mouse_year_b = document.getElementById('mouse_year') ?? undefined
 
-const app = new PIXI.Application({
+const app = new Application({
   background: theme['timeline-bg-color'],
   resizeTo: timeline_div,
   antialias: true,
@@ -43,7 +43,7 @@ let wheel_delta_y = 0
 
 timeline_div?.appendChild(app.view as unknown as Node)
 
-const timeline_container = new PIXI.Container()
+const timeline_container = new Container()
 
 // Create arrays of label and tick containers
 const label_groups: LabelGroup[] = []
@@ -65,15 +65,21 @@ for (const event_data of events) {
 }
 
 const timespan_objects: TimeSpan[] = []
-for (const timespan_data of time_spans) {
-  const timespan_obj = new TimeSpan(timespan_data, timeline_container)
-  timespan_objects.push(timespan_obj)
+
+for (const civilization in civ_timespans) {
+  const civ = civilization as Civilization
+  const civ_container = new Container()
+  for (const timespan_data of civ_timespans[civ]) {
+    const timespan_obj = new TimeSpan(civ, timespan_data, civ_container)
+    timespan_objects.push(timespan_obj)
+  }
+  timeline_container.addChild(civ_container)
 }
 
 app.stage.addChild(timeline_container)
 
 app.stage.eventMode = 'static'
-app.stage.hitArea = new PIXI.Rectangle(0, 0, app.view.width, app.view.height)
+app.stage.hitArea = new Rectangle(0, 0, app.view.width, app.view.height)
 
 window.addEventListener('resize', () => {
   pixels_per_year = calc_pixels_per_year(visible_year_span)

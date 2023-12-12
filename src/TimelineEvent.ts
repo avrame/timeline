@@ -32,7 +32,7 @@ export default class TimelineEvent {
   )
   title: Text
   date_float: number
-  pixi_graphics: Graphics = new Graphics()
+  graphics: Graphics = new Graphics()
   hit_area: Circle = new Circle()
   radius: number = TimelineEvent.circle_radius
   fill_color: Color = TimelineEvent.circle_fill_color
@@ -49,14 +49,14 @@ export default class TimelineEvent {
 
     this.date_float = date_to_float(new Date(event_data.date))
     this.hit_area.radius = TimelineEvent.circle_radius
-    this.pixi_graphics.eventMode = 'dynamic'
-    this.pixi_graphics.hitArea = this.hit_area
-    this.pixi_graphics.cursor = 'pointer'
-    this.pixi_graphics.on('pointerenter', this.handle_pointer_enter, this)
-    this.pixi_graphics.on('pointerleave', this.handle_pointer_leave, this)
-    this.pixi_graphics.on('pointerdown', this.handle_pointer_down, this)
-    this.pixi_graphics.on('pointerup', this.handle_pointer_up, this)
-    timeline_container.addChild(this.pixi_graphics)
+    this.graphics.eventMode = 'dynamic'
+    this.graphics.hitArea = this.hit_area
+    this.graphics.cursor = 'pointer'
+    this.graphics.on('pointerenter', this.handle_pointer_enter, this)
+    this.graphics.on('pointerleave', this.handle_pointer_leave, this)
+    this.graphics.on('pointerdown', this.handle_pointer_down, this)
+    this.graphics.on('pointerup', this.handle_pointer_up, this)
+    timeline_container.addChild(this.graphics)
   }
 
   draw(
@@ -65,7 +65,7 @@ export default class TimelineEvent {
     pixels_per_year: number,
     app_height: number,
   ) {
-    this.pixi_graphics.clear()
+    this.graphics.clear()
     if (
       this.date_float > visible_start_year_adjusted &&
       this.date_float < visible_end_year_adjusted
@@ -73,7 +73,7 @@ export default class TimelineEvent {
       const x_pos =
         (this.date_float - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
       const y_pos = app_height / 2
-      this.pixi_graphics
+      this.graphics
         .lineStyle(circle_line_style)
         .beginFill(this.fill_color)
         .drawCircle(x_pos, y_pos, this.radius)

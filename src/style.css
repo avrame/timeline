@@ -16,15 +16,15 @@
 
   --timespan-text-color: #fff;
   --timespan-line-color: #fff;
-  --timespan-greece-fill-color: #669;
-  --timespan-greece2-fill-color: #99d;
+  --timespan-greek-fill-color: #669;
+  --timespan-greek_2-fill-color: #99d;
   --timespan-babylonian-fill-color: #9d9;
   --timespan-roman-fill-color: #060;
-  --timespan-east-roman-fill-color: #393;
+  --timespan-east_roman-fill-color: #393;
   --timespan-ottoman-fill-color: #660;
-  --timespan-china-fill-color: #933;
-  --timespan-china2-fill-color: #b55;
-  --timespan-china3-fill-color: #d77;
+  --timespan-chinese-fill-color: #933;
+  --timespan-chinese_2-fill-color: #b55;
+  --timespan-chinese_3-fill-color: #d77;
 }
 
 html,

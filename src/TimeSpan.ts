@@ -7,63 +7,46 @@ import {
 } from 'pixi.js'
 import { date_to_float } from './utils'
 import { START_YEAR, VIEW_X_MARGIN, theme } from './config'
+import { Civilization, TimespanData, civ_order } from './data/time-spans'
 
-type TimespanData = {
-  title: string
-  category: string
-  start: string
-  end: string
-}
-
-const timespan_line_style: ILineStyleOptions = {
-  color: theme['timespan-line-color'],
-  width: 1,
-}
-
-const category_order: string[] = [
-  'greece',
-  'greece2',
-  'babylonian',
-  'roman',
-  'east-roman',
-  'ottoman',
-  'china',
-  'china2',
-  'china3',
-]
 const height = 42
 const x_margin = 2 * 10
 
 export default class TimeSpan {
+  static timespan_title_style = new TextStyle({ fontSize: 14, fill: theme['timespan-text-color'] })
+  static timespan_line_style: ILineStyleOptions = {
+    color: theme['timespan-line-color'],
+    width: 1,
+  }
   title: Text
   start_date_float: number
   end_date_float: number
   y_pos: number
-  container: Container = new Container()
-  pixi_graphics: Graphics = new Graphics()
+  container: Container
+  graphics: Graphics = new Graphics()
   fill_color: string
 
-  constructor(timespan_data: TimespanData, timeline_container: Container) {
+  constructor(civilization: Civilization, timespan_data: TimespanData, civ_container: Container) {
+    this.container = civ_container
     this.title = new Text(
       timespan_data.title,
-      new TextStyle({ fontSize: 14, fill: theme['timespan-text-color'] }),
+      TimeSpan.timespan_title_style,
     )
     this.title.anchor.set(0.5, 0.5)
-    this.title.visible = this.title.width < this.container.width
+    this.title.visible = this.title.width < this.graphics.width
 
     this.start_date_float = date_to_float(new Date(timespan_data.start))
     this.end_date_float = date_to_float(new Date(timespan_data.end))
 
-    this.fill_color = theme[`timespan-${timespan_data.category}-fill-color`]
-    this.y_pos = category_order.indexOf(timespan_data.category) * height
+    this.fill_color = theme[`timespan-${civilization}-fill-color`]
+    this.y_pos = civ_order.indexOf(civilization) * height
 
-    this.container.addChild(this.pixi_graphics)
-    this.container.addChild(this.title)
-    timeline_container.addChild(this.container)
+    this.graphics.addChild(this.title)
+    this.container.addChild(this.graphics)
   }
 
   draw(pixels_per_year: number) {
-    this.pixi_graphics.clear()
+    this.graphics.clear()
 
     const start_x_pos =
       (this.start_date_float - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
@@ -71,18 +54,15 @@ export default class TimeSpan {
       (this.end_date_float - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
     const width = end_x_pos - start_x_pos
 
-    this.pixi_graphics
-      .lineStyle(timespan_line_style)
+    this.graphics
+      .lineStyle(TimeSpan.timespan_line_style)
       .beginFill(this.fill_color)
       .drawRoundedRect(0, 0, width, height, 4)
       .endFill()
 
-    this.title.x = width / 2
-    this.title.y = height / 2
+    this.graphics.setTransform(start_x_pos, this.y_pos)
 
-    this.title.visible = this.title.width + x_margin < this.container.width
-
-    this.container.x = start_x_pos
-    this.container.y = this.y_pos
+    this.title.visible = this.title.width + x_margin < this.graphics.width
+    this.title.setTransform(width / 2, height / 2)
   }
 }
