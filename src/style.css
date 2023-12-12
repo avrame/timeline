@@ -1,17 +1,30 @@
 :root {
   --page-bg-color: #222;
-  --timeline-bg-color: #aaa;
+  --timeline-bg-color: #eee;
 
   --year-tick-color: #666;
   --decade-tick-color: #666;
   --century-tick-color: #333;
   --millennium-tick-color: #000;
 
-  --mouse-year-color: #fff;
+  --mouse-year-color: #333;
 
-  --event-circle-fill-color: #bbf;
-  --event-circle-hover-fill-color: #99d;
-  --event-circle-focus-fill-color: #77b;
+  --event-circle-line-color: #668;
+  --event-circle-fill-color: #99c;
+  --event-circle-hover-fill-color: #779;
+  --event-circle-focus-fill-color: #557;
+
+  --timespan-text-color: #fff;
+  --timespan-line-color: #fff;
+  --timespan-greece-fill-color: #669;
+  --timespan-greece2-fill-color: #99d;
+  --timespan-babylonian-fill-color: #9d9;
+  --timespan-roman-fill-color: #060;
+  --timespan-east-roman-fill-color: #393;
+  --timespan-ottoman-fill-color: #660;
+  --timespan-china-fill-color: #933;
+  --timespan-china2-fill-color: #b55;
+  --timespan-china3-fill-color: #d77;
 }
 
 html,
@@ -35,8 +48,7 @@ main {
 #timeline {
   background-color: var(--timeline-bg-color);
   width: 100%;
-  flex: 0 1 50%;
-  height: 50%;
+  flex: 0 1 100%;
 }
 
 #event_detail {
@@ -44,8 +56,9 @@ main {
 }
 
 #mouse_year {
+  position: absolute;
+  inset: 0 0 auto auto;
   color: var(--mouse-year-color);
-  display: block;
   text-align: center;
-  margin: 1rem auto;
+  padding: 1rem;
 }

@@ -29,7 +29,7 @@ export default class TickContainer {
 
   draw(pixels_per_year: number, app_height: number, wheel_delta_y: number, dt: number) {
     this.pixi_graphics.clear()
-    this.pixi_graphics.lineStyle({ width: 2, color: this.tick_color })
+    this.pixi_graphics.lineStyle({ width: 1, color: this.tick_color })
     for (let year_count = START_YEAR; year_count <= END_YEAR; year_count += this.tick_year_span) {
       if (year_count % (10 * this.tick_year_span) !== 0 || this.tick_year_span === MAX_LABEL_YEAR_SPAN) {
         const x_pos = (year_count - START_YEAR) * pixels_per_year + VIEW_X_MARGIN

@@ -23,6 +23,6 @@ export function fade_out_container(container: Container, dt: number): boolean {
   return container.alpha > 0
 }
 
-export function date_to_event_x(date: Date) {
+export function date_to_float(date: Date) {
   return 1970 + date.valueOf() / MS_IN_YEAR
 }

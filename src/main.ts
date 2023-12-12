@@ -3,10 +3,22 @@ import * as PIXI from 'pixi.js'
 import '@pixi/graphics-extras'
 import { format_year } from './utils'
 import LabelGroup from './LabelGroup'
-import { theme, MAX_ZOOM, MIN_ZOOM, START_YEAR, VIEW_X_MARGIN, YEAR_SPAN, ZOOM_RATE, END_YEAR, MAX_LABEL_YEAR_SPAN } from './config'
+import {
+  theme,
+  MAX_ZOOM,
+  MIN_ZOOM,
+  START_YEAR,
+  VIEW_X_MARGIN,
+  YEAR_SPAN,
+  ZOOM_RATE,
+  END_YEAR,
+  MAX_LABEL_YEAR_SPAN,
+} from './config'
 import TickGroup from './TickGroup'
-import events from './data/events'
 import TimelineEvent from './TimelineEvent'
+import TimeSpan from './TimeSpan'
+import events from './data/events'
+import time_spans from './data/time-spans'
 
 const timeline_div = document.getElementById('timeline') ?? undefined
 const mouse_year_b = document.getElementById('mouse_year') ?? undefined
@@ -14,6 +26,7 @@ const mouse_year_b = document.getElementById('mouse_year') ?? undefined
 const app = new PIXI.Application({
   background: theme['timeline-bg-color'],
   resizeTo: timeline_div,
+  antialias: true,
 })
 
 const VIEW_X_POS = timeline_div?.getBoundingClientRect().x ?? 0
@@ -51,6 +64,12 @@ for (const event_data of events) {
   event_objects.push(event_obj)
 }
 
+const timespan_objects: TimeSpan[] = []
+for (const timespan_data of time_spans) {
+  const timespan_obj = new TimeSpan(timespan_data, timeline_container)
+  timespan_objects.push(timespan_obj)
+}
+
 app.stage.addChild(timeline_container)
 
 app.stage.eventMode = 'static'
@@ -73,11 +92,12 @@ app.stage.addEventListener('wheel', (e: WheelEvent) => {
   const zoom_mult = calc_zoom(wheel_delta_y)
   visible_year_span = YEAR_SPAN / zoom
   pixels_per_year = calc_pixels_per_year(visible_year_span)
-  
+
   // Prevents too much horizontal sliding when zooming
   const wheel_delta_x = wheel_delta_y > 2 ? 0 : e.deltaX
-  let x_offset = -((mouse_x - timeline_container.x) * zoom_mult - mouse_x) - wheel_delta_x
-  
+  let x_offset =
+    -((mouse_x - timeline_container.x) * zoom_mult - mouse_x) - wheel_delta_x
+
   if (x_offset > 0 || zoom === 1) {
     x_offset = 0
   } else if (visible_end_year >= END_YEAR + VIEW_X_MARGIN / pixels_per_year) {
@@ -92,15 +112,21 @@ app.ticker.add((dt: number) => {
   mouse_year = visible_start_year + mouse_x / pixels_per_year
   if (mouse_year_b) mouse_year_b.innerText = format_year(mouse_year).toString()
   visible_start_year = START_YEAR - timeline_container.x / pixels_per_year
-  visible_end_year = visible_start_year + visible_year_span + VIEW_X_MARGIN / pixels_per_year
-
+  visible_end_year =
+    visible_start_year + visible_year_span + VIEW_X_MARGIN / pixels_per_year
 
   const years_in_margin = VIEW_X_MARGIN / pixels_per_year
   const visible_start_year_adjusted = visible_start_year - years_in_margin
-  const visible_end_year_adjusted = visible_start_year + visible_year_span + years_in_margin
+  const visible_end_year_adjusted =
+    visible_start_year + visible_year_span + years_in_margin
   draw_ticks(dt)
-  update_label_positions(dt, visible_start_year_adjusted, visible_end_year_adjusted)
+  update_label_positions(
+    dt,
+    visible_start_year_adjusted,
+    visible_end_year_adjusted,
+  )
   draw_events(visible_start_year_adjusted, visible_end_year_adjusted)
+  draw_timespans()
 })
 
 function calc_pixels_per_year(year_span: number) {
@@ -129,16 +155,39 @@ function draw_ticks(dt: number) {
   }
 }
 
-function update_label_positions(dt: number, visible_start_year_adjusted: number, visible_end_year_adjusted: number) {
-
+function update_label_positions(
+  dt: number,
+  visible_start_year_adjusted: number,
+  visible_end_year_adjusted: number,
+) {
   for (const label_container of label_groups) {
-    label_container.update_labels(visible_start_year_adjusted, visible_end_year_adjusted, pixels_per_year, app.view.height, wheel_delta_y, dt)
+    label_container.update_labels(
+      visible_start_year_adjusted,
+      visible_end_year_adjusted,
+      pixels_per_year,
+      app.view.height,
+      wheel_delta_y,
+      dt,
+    )
   }
 }
 
-function draw_events(visible_start_year_adjusted: number, visible_end_year_adjusted: number) {
+function draw_events(
+  visible_start_year_adjusted: number,
+  visible_end_year_adjusted: number,
+) {
   for (const event_obj of event_objects) {
-    // console.log(event_obj.log())
-    event_obj.draw(visible_start_year_adjusted, visible_end_year_adjusted, pixels_per_year, app.view.height)
+    event_obj.draw(
+      visible_start_year_adjusted,
+      visible_end_year_adjusted,
+      pixels_per_year,
+      app.view.height,
+    )
+  }
+}
+
+function draw_timespans() {
+  for (const timespan_obj of timespan_objects) {
+    timespan_obj.draw(pixels_per_year)
   }
 }

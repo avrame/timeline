@@ -6,7 +6,7 @@ export default class LabelContainer {
   tick_height: number
   label_year_span: number
   pixels_per_year_label_visible: number
-  pixi_container: Container = new Container()
+  container: Container = new Container()
   labels: { [year: number]: Text } = {}
 
   constructor(label_year_span:number, pixels_per_year: number, app_height: number) {
@@ -16,30 +16,30 @@ export default class LabelContainer {
     this.tick_height = tick_height
     this.label_year_span = label_year_span
     this.pixels_per_year_label_visible = pixels_per_year_label_visible
-    this.pixi_container.alpha = 0
-    this.pixi_container.eventMode = 'none'
+    this.container.alpha = 0
+    this.container.eventMode = 'none'
 
     this.create_labels(pixels_per_year, app_height, label_style)
   }
 
   add_to(timeline_container: Container) {
-    timeline_container.addChild(this.pixi_container)
+    timeline_container.addChild(this.container)
   }
 
   update_labels(visible_start_year: number, visible_end_year: number, pixels_per_year: number, app_height: number, wheel_delta_y:number, dt: number) {
     if (pixels_per_year >= this.pixels_per_year_label_visible) {
-      fade_in_container(this.pixi_container, dt)
+      fade_in_container(this.container, dt)
       this.update_label_positions(visible_start_year, visible_end_year, app_height, pixels_per_year)
     } else {
       if (wheel_delta_y > -10) {
         // Zoom rate is slow enough to fade the labels
-        const visible = fade_out_container(this.pixi_container, dt)
+        const visible = fade_out_container(this.container, dt)
         if (visible) {
           this.update_label_positions(visible_start_year, visible_end_year, app_height, pixels_per_year)
         }
       } else {
         // Zoom rate is too fast - just hide the labels immediately so that they don't bunch up
-        this.pixi_container.alpha = 0
+        this.container.alpha = 0
       }
     }
   }
@@ -49,7 +49,7 @@ export default class LabelContainer {
       if (year % (10 * this.label_year_span) !== 0 || this.label_year_span === MAX_LABEL_YEAR_SPAN) {
         const label = new Text(format_year(year), label_style)
         label.anchor.set(0.5, 1)
-        this.pixi_container.addChild(label)
+        this.container.addChild(label)
         this.labels[year] = label
       }
     }

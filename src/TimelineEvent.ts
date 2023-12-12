@@ -1,14 +1,22 @@
-import { Circle, Color, Container, Graphics, ILineStyleOptions, Text, TextStyle } from 'pixi.js'
+import {
+  Circle,
+  Color,
+  Container,
+  Graphics,
+  ILineStyleOptions,
+  Text,
+  TextStyle,
+} from 'pixi.js'
 import { START_YEAR, VIEW_X_MARGIN, theme } from './config'
-import { date_to_event_x } from './utils'
+import { date_to_float } from './utils'
 
 type EventData = {
-    title: string,
-    date: string,
+  title: string
+  date: string
 }
 
 const circle_line_style: ILineStyleOptions = {
-  color: '#000',
+  color: theme['event-circle-line-color'],
   width: 1,
 }
 
@@ -16,23 +24,30 @@ export default class TimelineEvent {
   static circle_radius: number = 10
   static circle_hover_radius: number = 12
   static circle_fill_color: Color = new Color(theme['event-circle-fill-color'])
-  static circle_hover_fill_color: Color = new Color(theme['event-circle-hover-fill-color'])
-  static circle_focus_fill_color: Color = new Color(theme['event-circle-focus-fill-color'])
+  static circle_hover_fill_color: Color = new Color(
+    theme['event-circle-hover-fill-color'],
+  )
+  static circle_focus_fill_color: Color = new Color(
+    theme['event-circle-focus-fill-color'],
+  )
   title: Text
   date_float: number
   pixi_graphics: Graphics = new Graphics()
   hit_area: Circle = new Circle()
   radius: number = TimelineEvent.circle_radius
   fill_color: Color = TimelineEvent.circle_fill_color
-    
+
   constructor(event_data: EventData, timeline_container: Container) {
-    this.title = new Text(event_data.title,  new TextStyle({
-      fontSize: 12,
-    }))
+    this.title = new Text(
+      event_data.title,
+      new TextStyle({
+        fontSize: 12,
+      }),
+    )
     this.title.anchor.set(0.5, 2)
     timeline_container.addChild(this.title)
 
-    this.date_float = date_to_event_x(new Date(event_data.date))
+    this.date_float = date_to_float(new Date(event_data.date))
     this.hit_area.radius = TimelineEvent.circle_radius
     this.pixi_graphics.eventMode = 'dynamic'
     this.pixi_graphics.hitArea = this.hit_area
@@ -43,11 +58,20 @@ export default class TimelineEvent {
     this.pixi_graphics.on('pointerup', this.handle_pointer_up, this)
     timeline_container.addChild(this.pixi_graphics)
   }
-    
-  draw(visible_start_year_adjusted: number, visible_end_year_adjusted: number, pixels_per_year: number, app_height: number) {
+
+  draw(
+    visible_start_year_adjusted: number,
+    visible_end_year_adjusted: number,
+    pixels_per_year: number,
+    app_height: number,
+  ) {
     this.pixi_graphics.clear()
-    if (this.date_float > visible_start_year_adjusted && this.date_float < visible_end_year_adjusted) {
-      const x_pos = (this.date_float - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+    if (
+      this.date_float > visible_start_year_adjusted &&
+      this.date_float < visible_end_year_adjusted
+    ) {
+      const x_pos =
+        (this.date_float - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
       const y_pos = app_height / 2
       this.pixi_graphics
         .lineStyle(circle_line_style)
