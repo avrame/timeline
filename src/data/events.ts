@@ -1,4 +1,10 @@
-export default [
+export type TimelineEventData = {
+  title: string
+  date: string
+  link?: string
+}
+
+const events: TimelineEventData[] = [
   {
     title: 'Battle of Marathon',
     date: '-000490-09-10T19:00:00.000Z',
@@ -9,3 +15,5 @@ export default [
     date: '1980-05-07T19:00:00.000Z'
   }
 ]
+
+export default events
