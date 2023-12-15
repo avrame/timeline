@@ -6,7 +6,9 @@
 
 ## Features
 
-- add timespans (like a person's lifetime, or a war)
+- combine timespans with events into categories/empires
+- allow choosing different categories/empires and adding them
+- Prevent adding too many categories/empires (based on available vertical space)
 - add touch controls
 
 ---
