@@ -1,13 +1,14 @@
 import { Container } from 'pixi.js'
 
-const FADE_SPEED = 0.025
-const MS_IN_YEAR = 365 * 24 * 60 * 60 * 1000
-
+const numFormat = new Intl.NumberFormat()
 export function format_year(year: number) {
   const era = year < 0 ? 'BCE' : 'CE'
-  return `${Math.abs(Math.floor(year))} ${era}`
+  const roundedYear = Math.abs(Math.floor(year))
+  const formattedYear = roundedYear >= 10_000 ? numFormat.format(roundedYear) : roundedYear
+  return `${formattedYear} ${era}`
 }
 
+const FADE_SPEED = 0.025
 export function fade_in_container(container: Container, dt: number) {
   if (container.alpha < 1) {
     container.alpha += dt * FADE_SPEED
@@ -23,6 +24,7 @@ export function fade_out_container(container: Container, dt: number): boolean {
   return container.alpha > 0
 }
 
+const MS_IN_YEAR = 365 * 24 * 60 * 60 * 1000
 export function date_to_float(date: Date) {
   return 1970 + date.valueOf() / MS_IN_YEAR
 }

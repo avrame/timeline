@@ -80,7 +80,7 @@ export default class Timeline {
 
     this.timeline_div?.appendChild(this.app.view as unknown as Node)
 
-    this.init_labels_and_ticks(max_label_year_span, view_height)
+    this.init_labels_and_ticks(max_label_year_span)
     this.init_events(events)
     this.init_timespans(civ_timespans)
 
@@ -88,25 +88,27 @@ export default class Timeline {
     this.app.stage.eventMode = 'static'
     this.app.stage.hitArea = new Rectangle(0, 0, view_width, view_height)
 
-    window.addEventListener('resize', this.handle_window_resize.bind(this))
-    this.app.stage.addEventListener('pointermove', this.handle_pointermove.bind(this))
-    this.app.stage.addEventListener('wheel', this.handle_mousewheel.bind(this))
+    window.addEventListener('resize', this.handle_window_resize)
+    this.app.stage.addEventListener('pointermove', this.handle_pointermove)
+    this.app.stage.addEventListener('wheel', this.handle_mousewheel)
   }
 
   start() {
     this.app.ticker.add(this.update.bind(this))
   }
 
-  private update(dt: number) {
+  private update = (dt: number) => {
     this.mouse_x = this.global_mouse_x - this.view_x_pos - this.view_x_margin
     this.mouse_year = this.visible_start_year + this.mouse_x / this.pixels_per_year
+    if (this.mouse_year >= 0) this.mouse_year += 1
     if (this.mouse_year_b) this.mouse_year_b.innerText = format_year(this.mouse_year).toString()
     this.visible_start_year = this.start_year - this.timeline_container.x / this.pixels_per_year
     this.visible_end_year = this.visible_start_year + this.visible_year_span + this.view_x_margin / this.pixels_per_year
+    if (this.visible_end_year >= 0) this.visible_end_year += 1
 
     const years_in_margin = this.view_x_margin / this.pixels_per_year
     const visible_start_year_adjusted = this.visible_start_year - years_in_margin
-    const visible_end_year_adjusted = this.visible_start_year + this.visible_year_span + years_in_margin
+    const visible_end_year_adjusted = this.visible_end_year + years_in_margin
     this.draw_ticks(dt)
     this.update_label_positions(
       dt,
@@ -117,15 +119,15 @@ export default class Timeline {
     this.draw_timespans()
   }
 
-  private handle_window_resize() {
+  private handle_window_resize = () => {
     this.pixels_per_year = this.calc_pixels_per_year()
   }
 
-  private handle_pointermove(e: MouseEvent) {
+  private handle_pointermove = (e: MouseEvent) => {
     this.global_mouse_x = e.x
   }
 
-  private handle_mousewheel(e: WheelEvent) {
+  private handle_mousewheel = (e: WheelEvent) => {
     e.preventDefault()
 
     this.wheel_delta_y = e.deltaY
@@ -149,10 +151,10 @@ export default class Timeline {
     this.timeline_container.x = x_offset
   }
 
-  private init_labels_and_ticks(max_label_year_span: number, view_height: number) {
+  private init_labels_and_ticks(max_label_year_span: number) {
     // Create arrays of label and tick containers
     for (let i = 1; i <= max_label_year_span; i *= 10) {
-      const label_group = new LabelGroup(i, this.pixels_per_year, view_height)
+      const label_group = new LabelGroup(i)
       label_group.add_to(this.timeline_container)
       this.label_groups.push(label_group)
 

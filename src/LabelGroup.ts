@@ -9,7 +9,7 @@ export default class LabelContainer {
   container: Container = new Container()
   labels: { [year: number]: Text } = {}
 
-  constructor(label_year_span:number, pixels_per_year: number, app_height: number) {
+  constructor(label_year_span: number) {
     const config = TICK_AND_LABEL_CONFIGS[label_year_span]
     const { pixels_per_year_label_visible, tick_height, label_style } = config
 
@@ -19,7 +19,7 @@ export default class LabelContainer {
     this.container.alpha = 0
     this.container.eventMode = 'none'
 
-    this.create_labels(pixels_per_year, app_height, label_style)
+    this.create_labels(label_style)
   }
 
   add_to(timeline_container: Container) {
@@ -44,23 +44,34 @@ export default class LabelContainer {
     }
   }
 
-  private create_labels(pixels_per_year: number, app_height: number, label_style: TextStyle) {
+  private create_labels(label_style: TextStyle) {
     for (let year = START_YEAR; year <= END_YEAR; year += this.label_year_span) {
-      if (year % (10 * this.label_year_span) !== 0 || this.label_year_span === MAX_LABEL_YEAR_SPAN) {
-        const label = new Text(format_year(year), label_style)
+      const year_adjusted = year === 0 ? year + 1 : year
+      if ((year_adjusted % (10 * this.label_year_span) !== 0 && year_adjusted !== 1) || this.label_year_span === MAX_LABEL_YEAR_SPAN) {
+        const label = new Text(format_year(year_adjusted), label_style)
         label.anchor.set(0.5, 1)
         this.container.addChild(label)
-        this.labels[year] = label
+        this.labels[year_adjusted] = label
       }
     }
   }
 
   private update_label_positions(visible_start_year: number, visible_end_year: number, app_height: number, pixels_per_year: number) {
     for (let year = START_YEAR; year <= YEAR_SPAN; year += this.label_year_span) {
-      const label = this.labels[year]
+      const year_adjusted = year === 0 ? year + 1 : year
+      const label = this.labels[year_adjusted]
       if (label) {
-        if (year >= visible_start_year && year <= visible_end_year) {
-          label.x = (year - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+        if (year_adjusted >= visible_start_year && year_adjusted <= visible_end_year) {
+          switch(true) {
+            case year_adjusted < 1:
+              label.x = (year_adjusted - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+              break
+            case year_adjusted === 1:
+              label.x = (year - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+              break
+            default:
+              label.x = (year - 1 - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+          }
           label.y = app_height - this.tick_height
           label.visible = true
         } else {

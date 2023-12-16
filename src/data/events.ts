@@ -13,6 +13,10 @@ const events: TimelineEventData[] = [
   {
     title: 'Avram Eisner born',
     date: '1980-05-07T19:00:00.000Z'
+  },
+  {
+    title: 'Monali Patel born',
+    date: '1982-02-10T19:00:00.000Z'
   }
 ]
 
