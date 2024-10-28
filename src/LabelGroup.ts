@@ -63,14 +63,14 @@ export default class LabelContainer {
       if (label) {
         if (year_adjusted >= visible_start_year && year_adjusted <= visible_end_year) {
           switch(true) {
-            case year_adjusted < 1:
-              label.x = (year_adjusted - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
-              break
-            case year_adjusted === 1:
-              label.x = (year - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
-              break
-            default:
-              label.x = (year - 1 - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+          case year_adjusted < 1:
+            label.x = (year_adjusted - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+            break
+          case year_adjusted === 1:
+            label.x = (year - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+            break
+          default:
+            label.x = (year - 1 - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
           }
           label.y = app_height - this.tick_height
           label.visible = true

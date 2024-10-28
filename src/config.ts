@@ -6,15 +6,18 @@ export const VIEW_X_MARGIN = 50
 export const theme = get_theme()
 
 export const now = new Date()
-export const START_YEAR = -10000
+export const START_YEAR = -100_000
 export const END_YEAR = now.getFullYear()
 export const YEAR_SPAN = END_YEAR - START_YEAR
-export const MAX_LABEL_YEAR_SPAN = 1000
+export const MAX_LABEL_YEAR_SPAN = 10_000
 
 export const MIN_ZOOM = 1
 export const MAX_ZOOM = YEAR_SPAN / 5
 export const ZOOM_RATE = 0.005
 
+export const ten_millenia_text_style = new TextStyle({
+  fontSize: 18,
+})
 export const millennium_text_style = new TextStyle({
   fontSize: 16,
 })
@@ -36,10 +39,17 @@ type LabelConfig = {
   tick_color: string
 }
 export const TICK_AND_LABEL_CONFIGS: {[year_span: number]: LabelConfig} = {
+  10_000: {
+    tick_height: 180,
+    label_style: ten_millenia_text_style,
+    pixels_per_year_label_visible: 0,
+    pixels_per_year_tick_visible: 0,
+    tick_color: theme['--ten-millenia-tick-color'],
+  },
   1000: {
     tick_height: 128,
     label_style: millennium_text_style,
-    pixels_per_year_label_visible: 0,
+    pixels_per_year_label_visible: 0.09,
     pixels_per_year_tick_visible: 0,
     tick_color: theme['--millennium-tick-color'],
   },

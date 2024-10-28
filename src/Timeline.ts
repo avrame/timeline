@@ -136,6 +136,7 @@ export default class Timeline {
     this.calc_zoom()
     this.visible_year_span = this.year_span / this.zoom
     this.pixels_per_year = this.calc_pixels_per_year()
+    console.log(this.pixels_per_year)
 
     // Prevents too much horizontal sliding when zooming
     const wheel_delta_x = this.wheel_delta_y > 2 ? 0 : e.deltaX
@@ -144,16 +145,14 @@ export default class Timeline {
 
     if (x_offset > 0 || this.zoom === 1) {
       x_offset = 0
-    } else if (this.visible_end_year >= this.end_year + this.view_x_margin / this.pixels_per_year) {
-      const tl_container_width = this.year_span * this.pixels_per_year + 2 * this.view_x_margin
-      x_offset = this.app.view.width - tl_container_width
     }
+
     this.timeline_container.x = x_offset
   }
 
   private init_labels_and_ticks(max_label_year_span: number) {
     // Create arrays of label and tick containers
-    for (let i = 1; i <= max_label_year_span; i *= 10) {
+    for (let i = 100; i <= max_label_year_span; i *= 10) {
       const label_group = new LabelGroup(i)
       label_group.add_to(this.timeline_container)
       this.label_groups.push(label_group)
