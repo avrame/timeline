@@ -1,5 +1,5 @@
 import { Container, Graphics } from 'pixi.js'
-import { END_YEAR, MAX_LABEL_YEAR_SPAN, START_YEAR, TICK_AND_LABEL_CONFIGS, VIEW_X_MARGIN } from './config'
+import { START_YEAR, TICK_AND_LABEL_CONFIGS, VIEW_X_MARGIN } from './config'
 import { fade_in_container, fade_out_container } from './utils'
 
 export default class TickContainer {
@@ -26,17 +26,26 @@ export default class TickContainer {
   add_to(timeline_container: Container) {
     timeline_container.addChild(this.container)
   }
+  
+  get_draw_threshold() {
+    return this.pixels_per_year_visible / 2
+  }
 
-  draw(pixels_per_year: number, app_height: number, wheel_delta_y: number, dt: number) {
+  draw(pixels_per_year: number, visible_start_year: number, visible_end_year: number, app_height: number, wheel_delta_y: number, dt: number) {
     this.graphics.clear()
     this.graphics.lineStyle({ width: 1, color: this.tick_color })
-    for (let year = START_YEAR; year <= END_YEAR; year += this.tick_year_span) {
-      if (year % (10 * this.tick_year_span) !== this.tick_year_span - 1 || this.tick_year_span === MAX_LABEL_YEAR_SPAN) {
-        const year_adjusted = year > 1 ? year - 1 : year
-        const x_pos = (year_adjusted - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
-        this.graphics.moveTo(x_pos, app_height)
-        this.graphics.lineTo(x_pos, app_height - this.tick_height)
-      }
+
+    const start_year = Math.round(Math.floor(visible_start_year / this.tick_year_span)) * this.tick_year_span
+    const end_year = Math.round(Math.ceil(visible_end_year / this.tick_year_span)) * this.tick_year_span
+    const first_year_adjusted = start_year > 1 ? start_year - 1 : start_year
+    const last_year_adjusted = end_year > 1 ? end_year - 1 : end_year
+    const first_x_pos = (first_year_adjusted - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+    const last_x_pos = (last_year_adjusted - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+    const tick_spacing = this.tick_year_span * pixels_per_year
+
+    for (let x_pos = first_x_pos; x_pos <= last_x_pos; x_pos += tick_spacing) {
+      this.graphics.moveTo(x_pos, app_height)
+      this.graphics.lineTo(x_pos, app_height - this.tick_height)
     }
     if (pixels_per_year >= this.pixels_per_year_visible) {
       fade_in_container(this.container, dt)

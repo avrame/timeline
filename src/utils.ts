@@ -1,11 +1,18 @@
 import { Container } from 'pixi.js'
 
-const numFormat = new Intl.NumberFormat()
 export function format_year(year: number) {
   const era = year < 0 ? 'BCE' : 'CE'
-  const roundedYear = Math.abs(Math.floor(year))
-  const formattedYear = roundedYear >= 10_000 ? numFormat.format(roundedYear) : roundedYear
-  return `${formattedYear} ${era}`
+  const absYear = Math.abs(year)
+  if (absYear < 10_000) {
+    return `${absYear} ${era}`
+  }
+  if (absYear < 1_000_000) {
+    return `${absYear / 1000} kya`
+  }
+  if (absYear < 1_000_000_000) {
+    return `${absYear / 1_000_000} mya`
+  }
+  return `${absYear / 1_000_000_000} bya`
 }
 
 const FADE_SPEED = 0.025

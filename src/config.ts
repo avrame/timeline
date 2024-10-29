@@ -6,15 +6,30 @@ export const VIEW_X_MARGIN = 50
 export const theme = get_theme()
 
 export const now = new Date()
-export const START_YEAR = -100_000
-export const END_YEAR = now.getFullYear()
+export const START_YEAR = -13_787_000_000
+export const END_YEAR = 10_000
 export const YEAR_SPAN = END_YEAR - START_YEAR
-export const MAX_LABEL_YEAR_SPAN = 10_000
+export const MAX_LABEL_YEAR_SPAN = 1_000_000_000
 
 export const MIN_ZOOM = 1
 export const MAX_ZOOM = YEAR_SPAN / 5
 export const ZOOM_RATE = 0.005
 
+export const one_billion_years_text_style = new TextStyle({
+  fontSize: 32,
+})
+export const one_hundred_million_years_text_style = new TextStyle({
+  fontSize: 28,
+})
+export const ten_million_years_text_style = new TextStyle({
+  fontSize: 26,
+})
+export const one_million_years_text_style = new TextStyle({
+  fontSize: 24,
+})
+export const one_hundred_millenia_text_style = new TextStyle({
+  fontSize: 22,
+})
 export const ten_millenia_text_style = new TextStyle({
   fontSize: 18,
 })
@@ -39,18 +54,53 @@ type LabelConfig = {
   tick_color: string
 }
 export const TICK_AND_LABEL_CONFIGS: {[year_span: number]: LabelConfig} = {
+  1_000_000_000: {
+    tick_height: 340,
+    label_style: one_billion_years_text_style,
+    pixels_per_year_label_visible: 0,
+    pixels_per_year_tick_visible: 0,
+    tick_color: theme['--one-billion-years-tick-color'],
+  },
+  100_000_000: {
+    tick_height: 300,
+    label_style: one_hundred_million_years_text_style,
+    pixels_per_year_label_visible: 0.000001,
+    pixels_per_year_tick_visible: 0.00000025,
+    tick_color: theme['--one-hundred-million-years-tick-color'],
+  },
+  10_000_000: {
+    tick_height: 280,
+    label_style: ten_million_years_text_style,
+    pixels_per_year_label_visible: 0.0000105,
+    pixels_per_year_tick_visible: 0.0000025,
+    tick_color: theme['--ten-million-years-tick-color'],
+  },
+  1_000_000: {
+    tick_height: 260,
+    label_style: one_million_years_text_style,
+    pixels_per_year_label_visible: 0.00012,
+    pixels_per_year_tick_visible: 0.000025,
+    tick_color: theme['--one-million-years-tick-color'],
+  },
+  100_000: {
+    tick_height: 220,
+    label_style: one_hundred_millenia_text_style,
+    pixels_per_year_label_visible: 0.0016,
+    pixels_per_year_tick_visible: 0.00025,
+    tick_color: theme['--one-hundred-millenia-tick-color'],
+  },
   10_000: {
     tick_height: 180,
     label_style: ten_millenia_text_style,
-    pixels_per_year_label_visible: 0,
-    pixels_per_year_tick_visible: 0,
+    pixels_per_year_label_visible: 0.014,
+    pixels_per_year_tick_visible: 0.0025,
     tick_color: theme['--ten-millenia-tick-color'],
   },
   1000: {
     tick_height: 128,
     label_style: millennium_text_style,
     pixels_per_year_label_visible: 0.09,
-    pixels_per_year_tick_visible: 0,
+    pixels_per_year_tick_visible: 0.045,
     tick_color: theme['--millennium-tick-color'],
   },
   100: {

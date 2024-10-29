@@ -7,7 +7,11 @@
   --century-tick-color: #333;
   --millennium-tick-color: #000;
   --ten-millenia-tick-color: #000;
-
+  --one-hundred-millenia-tick-color: #000;
+  --one-million-years-tick-color: #000;
+  --ten-million-years-tick-color: #000;
+  --one-hundred-million-years-tick-color: #000;
+  --one-billion-years-tick-color: #000;
   --mouse-year-color: #FFF;
 
   --event-circle-line-color: #668;

@@ -1,5 +1,5 @@
 import { Application, Container, Rectangle } from 'pixi.js'
-import { theme } from './config'
+import { START_YEAR, theme } from './config'
 import LabelGroup from './LabelGroup'
 import TickGroup from './TickGroup'
 import TimelineEvent from './TimelineEvent'
@@ -93,6 +93,28 @@ export default class Timeline {
     this.app.stage.addEventListener('wheel', this.handle_mousewheel)
   }
 
+  private init_labels_and_ticks(max_label_year_span: number) {
+    // Create arrays of label and tick containers
+    for (let i = 1; i <= max_label_year_span; i *= 10) {
+      const label_group = new LabelGroup(i)
+      label_group.add_to(this.timeline_container)
+      this.label_groups.push(label_group)
+
+      const tick_group = new TickGroup(i)
+      tick_group.add_to(this.timeline_container)
+      this.tick_groups.push(tick_group)
+    }
+    this.create_labels()
+  }
+
+  private create_labels() {
+    for (const label_group of this.label_groups) {
+      if (this.pixels_per_year >= label_group.get_draw_threshold()) {
+        label_group.create_labels(this.visible_start_year, this.visible_end_year)
+      }
+    }
+  }
+
   start() {
     this.app.ticker.add(this.update.bind(this))
   }
@@ -103,12 +125,13 @@ export default class Timeline {
     if (this.mouse_year >= 0) this.mouse_year += 1
     if (this.mouse_year_b) this.mouse_year_b.innerText = format_year(this.mouse_year).toString()
     this.visible_start_year = this.start_year - this.timeline_container.x / this.pixels_per_year
-    this.visible_end_year = this.visible_start_year + this.visible_year_span + this.view_x_margin / this.pixels_per_year
+    this.visible_end_year = this.visible_start_year + this.visible_year_span
     if (this.visible_end_year >= 0) this.visible_end_year += 1
 
     const years_in_margin = this.view_x_margin / this.pixels_per_year
-    const visible_start_year_adjusted = this.visible_start_year - years_in_margin
+    const visible_start_year_adjusted = Math.max(this.visible_start_year - years_in_margin, START_YEAR)
     const visible_end_year_adjusted = this.visible_end_year + years_in_margin
+
     this.draw_ticks(dt)
     this.update_label_positions(
       dt,
@@ -137,30 +160,19 @@ export default class Timeline {
     this.visible_year_span = this.year_span / this.zoom
     this.pixels_per_year = this.calc_pixels_per_year()
     console.log(this.pixels_per_year)
-
+    this.create_labels()
+    
     // Prevents too much horizontal sliding when zooming
     const wheel_delta_x = this.wheel_delta_y > 2 ? 0 : e.deltaX
     let x_offset =
-      -((this.mouse_x - this.timeline_container.x) * this.zoom_mult - this.mouse_x) - wheel_delta_x
-
+    -((this.mouse_x - this.timeline_container.x) * this.zoom_mult - this.mouse_x) - wheel_delta_x
+    
     if (x_offset > 0 || this.zoom === 1) {
       x_offset = 0
     }
-
+    
     this.timeline_container.x = x_offset
-  }
 
-  private init_labels_and_ticks(max_label_year_span: number) {
-    // Create arrays of label and tick containers
-    for (let i = 100; i <= max_label_year_span; i *= 10) {
-      const label_group = new LabelGroup(i)
-      label_group.add_to(this.timeline_container)
-      this.label_groups.push(label_group)
-
-      const tick_group = new TickGroup(i)
-      tick_group.add_to(this.timeline_container)
-      this.tick_groups.push(tick_group)
-    }
   }
 
   private init_events(events: TimelineEventData[]) {
@@ -203,7 +215,9 @@ export default class Timeline {
 
   private draw_ticks(dt: number) {
     for (const tick_container of this.tick_groups) {
-      tick_container.draw(this.pixels_per_year, this.app.view.height, this.wheel_delta_y, dt)
+      if (this.pixels_per_year >= tick_container.get_draw_threshold()) {
+        tick_container.draw(this.pixels_per_year, this.visible_start_year, this.visible_end_year, this.app.view.height, this.wheel_delta_y, dt)
+      }
     }
   }
 
