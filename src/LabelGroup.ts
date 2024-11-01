@@ -22,7 +22,7 @@ export default class LabelContainer {
   }
 
   get_draw_threshold() {
-    return this.pixels_per_year_label_visible * 1.1
+    return this.pixels_per_year_label_visible / 2
   }
 
   add_to(timeline_container: Container) {
