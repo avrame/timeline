@@ -37,14 +37,18 @@ export default class TickContainer {
 
     const start_year = Math.round(Math.floor(visible_start_year / this.tick_year_span)) * this.tick_year_span
     const end_year = Math.round(Math.ceil(visible_end_year / this.tick_year_span)) * this.tick_year_span
-    const first_year_adjusted = start_year > 1 ? start_year - 1 : start_year
-    const last_year_adjusted = end_year > 1 ? end_year - 1 : end_year
 
-    for (let year = first_year_adjusted; year <= last_year_adjusted; year += this.tick_year_span) {
-      if (year < START_YEAR || year > END_YEAR) {
+    for (let year = start_year; year <= end_year; year += this.tick_year_span) {
+      if (year < START_YEAR || year >= END_YEAR) {
         continue
       }
-      const x_pos = (year - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+
+      let x_pos = (year - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+      
+      if (year > 1 && this.tick_year_span >= 10) {
+        x_pos -= pixels_per_year
+      }
+      
       this.graphics.moveTo(x_pos, app_height)
       this.graphics.lineTo(x_pos, app_height - this.tick_height)
     }
