@@ -1,5 +1,5 @@
 import { Container, Graphics } from 'pixi.js'
-import { START_YEAR, TICK_AND_LABEL_CONFIGS, VIEW_X_MARGIN } from './config'
+import { END_YEAR, START_YEAR, TICK_AND_LABEL_CONFIGS, VIEW_X_MARGIN } from './config'
 import { fade_in_container, fade_out_container } from './utils'
 
 export default class TickContainer {
@@ -41,7 +41,7 @@ export default class TickContainer {
     const last_year_adjusted = end_year > 1 ? end_year - 1 : end_year
 
     for (let year = first_year_adjusted; year <= last_year_adjusted; year += this.tick_year_span) {
-      if (year < START_YEAR) {
+      if (year < START_YEAR || year > END_YEAR) {
         continue
       }
       const x_pos = (year - START_YEAR) * pixels_per_year + VIEW_X_MARGIN

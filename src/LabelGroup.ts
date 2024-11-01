@@ -1,6 +1,6 @@
 import { Container, Text, TextStyle } from 'pixi.js'
 import { fade_in_container, fade_out_container, format_year } from './utils'
-import { START_YEAR, VIEW_X_MARGIN, TICK_AND_LABEL_CONFIGS, MAX_LABEL_YEAR_SPAN } from './config'
+import { START_YEAR, VIEW_X_MARGIN, TICK_AND_LABEL_CONFIGS, MAX_LABEL_YEAR_SPAN, END_YEAR } from './config'
 
 export default class LabelContainer {
   tick_height: number
@@ -33,6 +33,9 @@ export default class LabelContainer {
     const start_year = Math.round(Math.floor(visible_start_year / this.label_year_span)) * this.label_year_span
     const end_year = Math.round(Math.ceil(visible_end_year / this.label_year_span)) * this.label_year_span
     for (let year = start_year; year <= end_year; year += this.label_year_span) {
+      if (year > END_YEAR) {
+        continue
+      }
       const year_adjusted = year === 0 ? year + 1 : year
       if ((year_adjusted % (10 * this.label_year_span) !== 0 && year_adjusted !== 1) || this.label_year_span === MAX_LABEL_YEAR_SPAN) {
         if (this.labels[year_adjusted]) {

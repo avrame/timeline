@@ -159,20 +159,18 @@ export default class Timeline {
     this.calc_zoom()
     this.visible_year_span = this.year_span / this.zoom
     this.pixels_per_year = this.calc_pixels_per_year()
-    console.log(this.pixels_per_year)
+    // console.log(this.pixels_per_year)
     this.create_labels()
     
     // Prevents too much horizontal sliding when zooming
     const wheel_delta_x = this.wheel_delta_y > 2 ? 0 : e.deltaX
-    let x_offset =
-    -((this.mouse_x - this.timeline_container.x) * this.zoom_mult - this.mouse_x) - wheel_delta_x
+    let x_offset = -((this.mouse_x - this.timeline_container.x) * this.zoom_mult - this.mouse_x) - wheel_delta_x
     
     if (x_offset > 0 || this.zoom === 1) {
       x_offset = 0
     }
-    
-    this.timeline_container.x = x_offset
 
+    this.timeline_container.x = x_offset
   }
 
   private init_events(events: TimelineEventData[]) {

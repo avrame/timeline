@@ -7,7 +7,7 @@ export const theme = get_theme()
 
 export const now = new Date()
 export const START_YEAR = -13_787_000_000
-export const END_YEAR = 10_000
+export const END_YEAR = now.getFullYear()
 export const YEAR_SPAN = END_YEAR - START_YEAR
 export const MAX_LABEL_YEAR_SPAN = 1_000_000_000
 
