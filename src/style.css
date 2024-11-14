@@ -14,10 +14,10 @@
   --one-billion-years-tick-color: #000;
   --mouse-year-color: #FFF;
 
-  --event-circle-line-color: #668;
-  --event-circle-fill-color: #99c;
-  --event-circle-hover-fill-color: #779;
-  --event-circle-focus-fill-color: #557;
+  --event-line-color: #668;
+  --event-fill-color: #99c;
+  --event-hover-fill-color: #779;
+  --event-focus-fill-color: #557;
 
   --timespan-text-color: #fff;
   --timespan-line-color: #fff;

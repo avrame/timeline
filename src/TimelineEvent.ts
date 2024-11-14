@@ -1,5 +1,4 @@
 import {
-  Circle,
   Color,
   Container,
   Graphics,
@@ -16,28 +15,25 @@ type EventData = {
 }
 
 const circle_line_style: ILineStyleOptions = {
-  color: theme['event-circle-line-color'],
+  color: theme['event-line-color'],
   width: 1,
 }
 
 export default class TimelineEvent {
-  static circle_radius: number = 10
-  static circle_hover_radius: number = 12
-  static circle_fill_color: Color = new Color(theme['event-circle-fill-color'])
-  static circle_hover_fill_color: Color = new Color(
-    theme['event-circle-hover-fill-color'],
+  static fill_color: Color = new Color(theme['event-fill-color'])
+  static hover_fill_color: Color = new Color(
+    theme['event-hover-fill-color'],
   )
-  static circle_focus_fill_color: Color = new Color(
-    theme['event-circle-focus-fill-color'],
+  static focus_fill_color: Color = new Color(
+    theme['event-focus-fill-color'],
   )
   title: Text
   date_float: number
   graphics: Graphics = new Graphics()
-  hit_area: Circle = new Circle()
-  radius: number = TimelineEvent.circle_radius
-  fill_color: Color = TimelineEvent.circle_fill_color
+  size: number = 20
+  fill_color: Color = TimelineEvent.fill_color
 
-  constructor(event_data: EventData, timeline_container: Container) {
+  constructor(event_data: EventData, timeline_container: Container, graphics: Graphics) {
     this.title = new Text(
       event_data.title,
       new TextStyle({
@@ -48,9 +44,8 @@ export default class TimelineEvent {
     timeline_container.addChild(this.title)
 
     this.date_float = date_to_float(new Date(event_data.date))
-    this.hit_area.radius = TimelineEvent.circle_radius
+    this.graphics = graphics
     this.graphics.eventMode = 'dynamic'
-    this.graphics.hitArea = this.hit_area
     this.graphics.cursor = 'pointer'
     this.graphics.on('pointerenter', this.handle_pointer_enter, this)
     this.graphics.on('pointerleave', this.handle_pointer_leave, this)
@@ -65,21 +60,21 @@ export default class TimelineEvent {
     pixels_per_year: number,
     app_height: number,
   ) {
-    this.graphics.clear()
     if (
       this.date_float > visible_start_year_adjusted &&
       this.date_float < visible_end_year_adjusted
     ) {
-      const x_pos =
-        (this.date_float - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+      let x_pos = (this.date_float - START_YEAR) * pixels_per_year + VIEW_X_MARGIN
+      if (this.date_float > 1) {
+        x_pos -= pixels_per_year
+      }
       const y_pos = app_height / 2
       this.graphics
         .lineStyle(circle_line_style)
         .beginFill(this.fill_color)
-        .drawCircle(x_pos, y_pos, this.radius)
+        // .drawCircle(x_pos, y_pos, this.radius) // For some reason the circle gets distorted when the timeline is zoomed
+        .drawRect(x_pos - this.size / 2, y_pos - this.size / 2, this.size, this.size)
         .endFill()
-      this.hit_area.x = x_pos
-      this.hit_area.y = y_pos
       this.title.x = x_pos
       this.title.y = y_pos
       this.title.visible = true
@@ -89,20 +84,18 @@ export default class TimelineEvent {
   }
 
   private handle_pointer_enter() {
-    this.fill_color = TimelineEvent.circle_hover_fill_color
-    this.radius = TimelineEvent.circle_hover_radius
+    this.fill_color = TimelineEvent.hover_fill_color
   }
 
   private handle_pointer_leave() {
-    this.fill_color = TimelineEvent.circle_fill_color
-    this.radius = TimelineEvent.circle_radius
+    this.fill_color = TimelineEvent.fill_color
   }
 
   private handle_pointer_down() {
-    this.fill_color = TimelineEvent.circle_focus_fill_color
+    this.fill_color = TimelineEvent.focus_fill_color
   }
 
   private handle_pointer_up() {
-    this.fill_color = TimelineEvent.circle_hover_fill_color
+    this.fill_color = TimelineEvent.hover_fill_color
   }
 }

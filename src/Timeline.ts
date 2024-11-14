@@ -1,4 +1,4 @@
-import { Application, Container, Rectangle } from 'pixi.js'
+import { Application, Container, Graphics, Rectangle } from 'pixi.js'
 import { START_YEAR, theme } from './config'
 import LabelGroup from './LabelGroup'
 import TickGroup from './TickGroup'
@@ -32,6 +32,7 @@ export default class Timeline {
   mouse_year_b?: HTMLElement
   app: Application
   timeline_container: Container = new Container()
+  events_graphics: Graphics = new Graphics()
   label_groups: LabelGroup[] = []
   tick_groups: TickGroup[] = []
   event_objects: TimelineEvent[] = []
@@ -174,8 +175,9 @@ export default class Timeline {
   }
 
   private init_events(events: TimelineEventData[]) {
+    this.timeline_container.addChild(this.events_graphics)
     for (const event_data of events) {
-      const event_obj = new TimelineEvent(event_data, this.timeline_container)
+      const event_obj = new TimelineEvent(event_data, this.timeline_container, this.events_graphics)
       this.event_objects.push(event_obj)
     }
   }
@@ -240,6 +242,7 @@ export default class Timeline {
     visible_start_year_adjusted: number,
     visible_end_year_adjusted: number,
   ) {
+    this.events_graphics.clear()
     for (const event_obj of this.event_objects) {
       event_obj.draw(
         visible_start_year_adjusted,
